@@ -1,5 +1,6 @@
 ﻿using System.Windows.Forms;
 using ScorpionBox.Core;
+using SK.Libretro.Utilities;
 
 internal class Program
 {
@@ -15,7 +16,7 @@ internal class Program
         Application.SetHighDpiMode(HighDpiMode.SystemAware);
 
         // Create an instance of the game and start the game loop.
-        using var game = new ScorpionBoxGame();
+        using var game = new ScorpionBoxGame(new DllModuleWindows(), ".dll");
         game.Run();
     }
 }

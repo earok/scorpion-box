@@ -1,4 +1,6 @@
-﻿using Foundation;
+﻿#define SCORPIONBOX_IOS
+
+using Foundation;
 using ScorpionBox.Core;
 using UIKit;
 

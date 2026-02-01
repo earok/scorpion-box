@@ -21,11 +21,14 @@
  * SOFTWARE. */
 
 using NAudio.Wave;
+using SK.Libretro;
+using SK.Libretro.Utilities;
 using System;
+using System.Diagnostics;
 
-namespace SK.Libretro
+namespace ScorpionBox.Core.Processors
 {
-    public class NAudioAudioProcessor
+    public class NAudioAudioProcessor : IAudioProcessor
     {
         private const int AUDIO_BUFFER_SIZE = 65536;
 
@@ -43,7 +46,7 @@ namespace SK.Libretro
                     DesiredLatency = 140
                 };
 
-                WaveFormat audioFormat = WaveFormat.CreateIeeeFloatWaveFormat(sampleRate > 0 ? sampleRate : 44100, 2);
+                var audioFormat = WaveFormat.CreateIeeeFloatWaveFormat(sampleRate > 0 ? sampleRate : 44100, 2);
                 _bufferedWaveProvider = new BufferedWaveProvider(audioFormat)
                 {
                     DiscardOnBufferOverflow = true,
@@ -55,7 +58,7 @@ namespace SK.Libretro
             }
             catch (Exception e)
             {
-                //Todo
+                Debug.WriteLine(e);
             }
         }
 
@@ -69,7 +72,7 @@ namespace SK.Libretro
         {
             if (_bufferedWaveProvider != null)
             {
-                byte[] byteBuffer = new byte[samples.Length * sizeof(float)];
+                var byteBuffer = new byte[samples.Length * sizeof(float)];
                 Buffer.BlockCopy(samples, 0, byteBuffer, 0, byteBuffer.Length);
                 _bufferedWaveProvider.AddSamples(byteBuffer, 0, byteBuffer.Length);
             }

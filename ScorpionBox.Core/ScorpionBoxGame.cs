@@ -1,13 +1,17 @@
-﻿using System;
+﻿#define Scorpio
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
-using Libretro.NET;
-using Libretro.NET.Bindings;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using ScorpionBox.Core.Localization;
+using ScorpionBox.Core.Processors;
 using SK.Libretro;
+using SK.Libretro.Utilities;
+using static SK.Libretro.Wrapper;
+//using SK.Libretro.Utilities;
 
 namespace ScorpionBox.Core;
 /// <summary>
@@ -16,11 +20,12 @@ namespace ScorpionBox.Core;
 /// </summary>
 public class ScorpionBoxGame : Game
 {
+    public SurfaceFormat PixelFormat;
+    public Texture2D CurrentTexture;
+
     // Resources for drawing.
     private GraphicsDeviceManager _graphics;
-    private RetroWrapper _retro;
-    private SurfaceFormat _pixelFormat;
-    private Texture2D _currentTexture;
+    private Wrapper _retro;
     private SpriteBatch _spriteBatch;
 
     /// <summary>
@@ -38,7 +43,7 @@ public class ScorpionBoxGame : Game
     /// initializes services like settings and leaderboard managers, and sets up the 
     /// screen manager for screen transitions.
     /// </summary>
-    public ScorpionBoxGame()
+    public ScorpionBoxGame(DllModule dll, string ext)
     {
         _graphics = new GraphicsDeviceManager(this);
 
@@ -50,21 +55,12 @@ public class ScorpionBoxGame : Game
         // Configure screen orientations.
         _graphics.SupportedOrientations = DisplayOrientation.LandscapeLeft | DisplayOrientation.LandscapeRight;
 
-        //Assume SO by default
-        var ext = ".so";
-        if (OperatingSystem.IsMacOS())
-        {
-            ext = ".dylib";
-        }
-        else if (OperatingSystem.IsWindows())
-        {
-            ext = ".dll";
-        }
-        ext = "_libretro" + ext;
 
-        _retro = new RetroWrapper();
-        _retro.LoadCore("cores/picodrive" + ext);
-        _retro.LoadGame("game.bin");
+        _retro = new Wrapper(".", dll, ext);
+        if (_retro.StartGame("Cores", "genesis_plus_gx_wide", ".", "game") == false)
+        {
+            throw new Exception("Could not start game");
+        }
     }
 
     /// <summary>
@@ -73,32 +69,35 @@ public class ScorpionBoxGame : Game
     /// </summary>
     protected override void Initialize()
     {
+        var width = _retro.Game.SystemAVInfo.geometry.base_width;
+        var height = _retro.Game.SystemAVInfo.geometry.base_height;
+
         Window.AllowUserResizing = true;
+        var screenWidths = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width / width;
+        var screenHeights = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height / height;
 
         //Default to the largest native scale we can get away with
-        var screenWidths = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width / (int)_retro.Width;
-        var screenHeights = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height / (int)_retro.Height;
-        var screenScale = Math.Min(screenWidths, screenHeights);
+        var screenScale = (int)Math.Min(screenWidths, screenHeights);
 
-        _graphics.PreferredBackBufferWidth = (int)_retro.Width * screenScale;
-        _graphics.PreferredBackBufferHeight = (int)_retro.Height * screenScale;
+        _graphics.PreferredBackBufferWidth = (int)width * screenScale;
+        _graphics.PreferredBackBufferHeight = (int)height * screenScale;
         _graphics.ApplyChanges();
 
-        _pixelFormat = _retro.PixelFormat switch
+        PixelFormat = _retro.Game.PixelFormat switch
         {
             retro_pixel_format.RETRO_PIXEL_FORMAT_RGB565 => SurfaceFormat.Bgr565,
             retro_pixel_format.RETRO_PIXEL_FORMAT_0RGB1555 => SurfaceFormat.Bgra5551,
             retro_pixel_format.RETRO_PIXEL_FORMAT_XRGB8888 => SurfaceFormat.Bgra32,
-            retro_pixel_format.RETRO_PIXEL_FORMAT_UNKNOWN => SurfaceFormat.Bgr565,
+            //            retro_pixel_format.RETRO_PIXEL_FORMAT_UNKNOWN => SurfaceFormat.Bgr565,
             _ => SurfaceFormat.Bgr565,
         };
 
-        _retro.OnFrame = OnFrame;
-        _retro.OnCheckInput = OnCheckInput;
+        _retro.ActivateGraphics(new ScorpionGraphicsProcessor(this));
+        _retro.ActivateInput(new ScorpionInputProcessor(this));
 
         var processor = new NAudioAudioProcessor();
-        processor.Init((int)_retro.SampleRate);
-        _retro.OnSample = processor.ProcessSamples;
+        processor.Init((int)_retro.Game.SystemAVInfo.timing.sample_rate);
+        _retro.ActivateAudio(processor);
 
         // Load supported languages and set the default language.
         List<CultureInfo> cultures = LocalizationManager.GetSupportedCultures();
@@ -114,33 +113,6 @@ public class ScorpionBoxGame : Game
         LocalizationManager.SetCulture(selectedLanguage);
 
         base.Initialize();
-    }
-
-    private bool OnCheckInput(uint port, uint device, uint index, uint id)
-    {
-        KeyboardState state = Keyboard.GetState();
-
-        return id switch
-        {
-            RetroBindings.RETRO_DEVICE_ID_JOYPAD_A => state.IsKeyDown(Keys.X),
-            RetroBindings.RETRO_DEVICE_ID_JOYPAD_B => state.IsKeyDown(Keys.C),
-            RetroBindings.RETRO_DEVICE_ID_JOYPAD_L => state.IsKeyDown(Keys.A),
-            RetroBindings.RETRO_DEVICE_ID_JOYPAD_R => state.IsKeyDown(Keys.Z),
-            RetroBindings.RETRO_DEVICE_ID_JOYPAD_UP => state.IsKeyDown(Keys.Up),
-            RetroBindings.RETRO_DEVICE_ID_JOYPAD_DOWN => state.IsKeyDown(Keys.Down),
-            RetroBindings.RETRO_DEVICE_ID_JOYPAD_LEFT => state.IsKeyDown(Keys.Left),
-            RetroBindings.RETRO_DEVICE_ID_JOYPAD_RIGHT => state.IsKeyDown(Keys.Right),
-            RetroBindings.RETRO_DEVICE_ID_JOYPAD_START => state.IsKeyDown(Keys.Enter),
-            RetroBindings.RETRO_DEVICE_ID_JOYPAD_SELECT => state.IsKeyDown(Keys.RightShift),
-            _ => false
-        };
-    }
-
-    private void OnFrame(byte[] frame, uint width, uint height)
-    {
-        if (_currentTexture != null) _currentTexture.Dispose();
-        _currentTexture = new Texture2D(GraphicsDevice, (int)width, (int)height, false, _pixelFormat);
-        _currentTexture.SetData(frame);
     }
 
     /// <summary>
@@ -164,7 +136,7 @@ public class ScorpionBoxGame : Game
             Exit();
         }
 
-        _retro.Run();
+        _retro.Update();
 
         base.Update(gameTime);
     }
@@ -179,7 +151,12 @@ public class ScorpionBoxGame : Game
     {
         GraphicsDevice.Clear(Color.Transparent);
 
-        var texture = _currentTexture;
+        if (CurrentTexture == null)
+        {
+            return;
+        }
+
+        var texture = CurrentTexture;
 
         var widthRatio = (double)Window.ClientBounds.Width / texture.Width;
         var heightRatio = (double)Window.ClientBounds.Height / texture.Height;
@@ -201,7 +178,7 @@ public class ScorpionBoxGame : Game
     {
         if (disposing)
         {
-            _retro.Dispose();
+            //            _retro.Dispose();
         }
 
         base.Dispose(disposing);
