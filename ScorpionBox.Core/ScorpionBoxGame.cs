@@ -1,6 +1,4 @@
-﻿#define Scorpio
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using Microsoft.Xna.Framework;

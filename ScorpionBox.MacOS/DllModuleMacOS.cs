@@ -1,5 +1,4 @@
-﻿#if SCORPIONBOX_MACOS
-using System;
+﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
 
@@ -66,4 +65,3 @@ namespace SK.Libretro.Utilities
         }
     }
 }
-#endif
