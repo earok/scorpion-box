@@ -22,7 +22,6 @@ public class ScorpionBoxGame : Game
     private SurfaceFormat _pixelFormat;
     private Texture2D _currentTexture;
     private SpriteBatch _spriteBatch;
-    private bool _isRunning = true;
 
     /// <summary>
     /// Indicates if the game is running on a mobile platform.
@@ -51,8 +50,20 @@ public class ScorpionBoxGame : Game
         // Configure screen orientations.
         _graphics.SupportedOrientations = DisplayOrientation.LandscapeLeft | DisplayOrientation.LandscapeRight;
 
+        //Assume SO by default
+        var ext = ".so";
+        if (OperatingSystem.IsMacOS())
+        {
+            ext = ".dylib";
+        }
+        else if (OperatingSystem.IsWindows())
+        {
+            ext = ".dll";
+        }
+        ext = "_libretro" + ext;
+
         _retro = new RetroWrapper();
-        _retro.LoadCore("blastem_libretro.dll");
+        _retro.LoadCore("cores/picodrive" + ext);
         _retro.LoadGame("game.bin");
     }
 
@@ -64,8 +75,13 @@ public class ScorpionBoxGame : Game
     {
         Window.AllowUserResizing = true;
 
-        _graphics.PreferredBackBufferWidth = (int)_retro.Width * 4;
-        _graphics.PreferredBackBufferHeight = (int)_retro.Height * 4;
+        //Default to the largest native scale we can get away with
+        var screenWidths = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width / (int)_retro.Width;
+        var screenHeights = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height / (int)_retro.Height;
+        var screenScale = Math.Min(screenWidths, screenHeights);
+
+        _graphics.PreferredBackBufferWidth = (int)_retro.Width * screenScale;
+        _graphics.PreferredBackBufferHeight = (int)_retro.Height * screenScale;
         _graphics.ApplyChanges();
 
         _pixelFormat = _retro.PixelFormat switch
@@ -118,11 +134,6 @@ public class ScorpionBoxGame : Game
             RetroBindings.RETRO_DEVICE_ID_JOYPAD_SELECT => state.IsKeyDown(Keys.RightShift),
             _ => false
         };
-    }
-
-    private void OnSample(byte[] sample)
-    {
-        //To implement
     }
 
     private void OnFrame(byte[] frame, uint width, uint height)
@@ -188,7 +199,6 @@ public class ScorpionBoxGame : Game
 
     protected override void Dispose(bool disposing)
     {
-        _isRunning = false;
         if (disposing)
         {
             _retro.Dispose();

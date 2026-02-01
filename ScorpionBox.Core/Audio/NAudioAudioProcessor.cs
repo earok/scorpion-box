@@ -25,7 +25,7 @@ using System;
 
 namespace SK.Libretro
 {
-    public class NAudioAudioProcessor : IAudioProcessor
+    public class NAudioAudioProcessor
     {
         private const int AUDIO_BUFFER_SIZE = 65536;
 

@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
+using System.Xml.Schema;
 using Libretro.NET.Bindings;
 
 namespace Libretro.NET
@@ -13,6 +15,7 @@ namespace Libretro.NET
     /// </summary>
     public unsafe class RetroWrapper : IDisposable
     {
+        private const float _floatScale = 0.000030517578125f;
         private IRetro _interop;
 
         public uint Width { get; private set; }
@@ -23,6 +26,8 @@ namespace Libretro.NET
 
         //Ensures that 8888 works
         public int BytesPerPixel = 4;
+        public int PerformanceLevel;
+        private const int RETRO_API_VERSION = 1;
 
         public delegate void OnFrameDelegate(byte[] frame, uint width, uint height);
         public OnFrameDelegate OnFrame { get; set; }
@@ -39,11 +44,13 @@ namespace Libretro.NET
 
             _interop.set_environment(Environment);
             _interop.set_video_refresh(VideoRefresh);
-            _interop.set_input_poll(InputPoll);
-            _interop.set_input_state(InputState);
             _interop.set_audio_sample(AudioSample);
             _interop.set_audio_sample_batch(AudioSampleBatch);
+            _interop.set_input_poll(InputPoll);
+            _interop.set_input_state(InputState);
             _interop.init();
+
+            var x = _interop.api_version();
         }
 
         public bool LoadGame(string gamePath)
@@ -68,8 +75,8 @@ namespace Libretro.NET
             var av = new retro_system_av_info();
             _interop.get_system_av_info(ref av);
 
-            Width = av.geometry.base_width;
-            Height = av.geometry.base_height;
+            Width = av.geometry.base_width > 0 ? av.geometry.base_width : av.geometry.max_width;
+            Height = av.geometry.base_height > 0 ? av.geometry.base_height : av.geometry.max_height;
             FPS = av.timing.fps;
             SampleRate = av.timing.sample_rate;
 
@@ -83,14 +90,20 @@ namespace Libretro.NET
 
         private bool Environment(uint cmd, void* data)
         {
+            //Expanded from https://raw.githubusercontent.com/humbertodias/RetroUnityFE/e08e9c46cd7279ded55815d761f7d9d3944278b8/Assets/Libretro/Scripts/Wrapper/LibretroEnvironment.cs
+            //To support additional options
+
+            Debug.WriteLine("Cmd " + cmd);
+
             switch (cmd)
             {
                 case RetroBindings.RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY:
                     {
                         char** cb = (char**)data;
                         *cb = (char*)Marshal.StringToHGlobalAuto(".");
-                        return true;
                     }
+                    break;
+
                 case RetroBindings.RETRO_ENVIRONMENT_SET_PIXEL_FORMAT:
                     {
                         PixelFormat = (retro_pixel_format)(*(byte*)data);
@@ -104,29 +117,68 @@ namespace Libretro.NET
                                 BytesPerPixel = 2;
                                 break;
                         }
-                        return true;
                     }
+                    break;
+
                 case RetroBindings.RETRO_ENVIRONMENT_GET_LOG_INTERFACE:
                     {
                         retro_log_callback* cb = (retro_log_callback*)data;
                         cb->log = NativeDispatchProxy.Register<retro_log_printf_t>(Log);
-                        return true;
                     }
+                    break;
+
                 case RetroBindings.RETRO_ENVIRONMENT_GET_CAN_DUPE:
                     {
                         return *(bool*)data = true;
                     }
+
                 case RetroBindings.RETRO_ENVIRONMENT_SET_FRAME_TIME_CALLBACK:
                     {
                         retro_frame_time_callback* cb = (retro_frame_time_callback*)data;
                         cb->callback = NativeDispatchProxy.Register<retro_frame_time_callback_t>(Time);
-                        return true;
                     }
-                default:
+                    break;
+
+                case RetroBindings.RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE:
                     {
-                        return false;
+                        bool* outVariableUpdate = (bool*)data;
+                        *outVariableUpdate = false;
                     }
+                    break;
+
+                case RetroBindings.RETRO_ENVIRONMENT_GET_CORE_OPTIONS_VERSION:
+                    {
+                        uint* outVersion = (uint*)data;
+                        *outVersion = RETRO_API_VERSION;
+                    }
+                    break;
+
+                case RetroBindings.RETRO_ENVIRONMENT_SET_PERFORMANCE_LEVEL:
+                    {
+                        int* inPerformanceLevel = (int*)data;
+                        PerformanceLevel = *inPerformanceLevel;
+                    }
+                    break;
+
+
+                case RetroBindings.RETRO_ENVIRONMENT_GET_VARIABLE:
+                    retro_variable* outVariable = (retro_variable*)data;
+                    string key = CharsToString(outVariable->key);
+                    Debug.WriteLine(key);
+                    return false;
+
+                //Various methods not implemented at all
+                case RetroBindings.RETRO_ENVIRONMENT_GET_LANGUAGE:
+                case RetroBindings.RETRO_ENVIRONMENT_SET_CORE_OPTIONS_INTL:
+                case RetroBindings.RETRO_ENVIRONMENT_GET_DISK_CONTROL_INTERFACE_VERSION:
+                case RetroBindings.RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE:
+                    return false;
+
+                default:
+                    Debug.WriteLine("Unimplemented cmd " + cmd);
+                    return false;
             }
+            return true;
         }
 
         private void VideoRefresh(void* data, uint width, uint height, UIntPtr pitch)
@@ -159,44 +211,35 @@ namespace Libretro.NET
 
         private void AudioSample(short left, short right)
         {
-            //To implement this
-            throw new NotImplementedException();
-
-            var count = 2;
-            var audio = new float[count*2];
-            var data = Marshal.AllocHGlobal(count * 2);
-
-            Marshal.Copy(new[] { left, right }, 0, data, 0);
-            Marshal.Copy(data, audio, 0, count * 2);
-
+            var audio = new float[2];
+            audio[0] = ClampAudio(left);
+            audio[1] = ClampAudio(right);
             OnSample?.Invoke(audio);
         }
 
         private UIntPtr AudioSampleBatch(short* data, UIntPtr frames)
         {
-            var count = (int)frames * 2;
-            float[] floatBuffer = new float[count];
-
-            for (int i = 0; i < floatBuffer.Length; ++i)
+            var floatBuffer = new float[(int)frames * 2];
+            for (var i = 0; i < floatBuffer.Length; ++i)
             {
-                var f = data[i] * 0.000030517578125f;
-                //todo implement math clamp function
-                if(f < -1)
-                {
-                    floatBuffer[i] = -1;
-                }
-                else if(f > 1)
-                {
-                    floatBuffer[i] = 1;
-                }
-                else
-                {
-                    floatBuffer[i] = f;
-                }
+                floatBuffer[i] = ClampAudio(data[i]);
             }
-
             OnSample?.Invoke(floatBuffer);
             return frames;
+        }
+
+        private float ClampAudio(float v)
+        {
+            v *= _floatScale;
+            if (v < -1)
+            {
+                return -1;
+            }
+            if (v > 1)
+            {
+                return 1;
+            }
+            return v;
         }
 
         private void Log(retro_log_level level, sbyte* fmt)
@@ -211,7 +254,14 @@ namespace Libretro.NET
 
         public void Dispose()
         {
+            _interop.deinit();
             NativeDispatchProxy.Dispose(_interop);
         }
+
+        public unsafe static string CharsToString(sbyte* str)
+        {
+            return Marshal.PtrToStringAnsi((IntPtr)str);
+        }
+
     }
 }
