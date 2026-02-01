@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScorpionBox.WindowsGL", "Sc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScorpionBox.MacOS", "ScorpionBox.MacOS\ScorpionBox.MacOS.csproj", "{2D9E842B-2F51-47D6-AB30-1E86284E87A5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScorpionBox.Linux", "ScorpionBox.Linux\ScorpionBox.Linux.csproj", "{04FB41C1-F206-4275-B6F3-9245917A94EC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{2D9E842B-2F51-47D6-AB30-1E86284E87A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D9E842B-2F51-47D6-AB30-1E86284E87A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D9E842B-2F51-47D6-AB30-1E86284E87A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{04FB41C1-F206-4275-B6F3-9245917A94EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{04FB41C1-F206-4275-B6F3-9245917A94EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{04FB41C1-F206-4275-B6F3-9245917A94EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{04FB41C1-F206-4275-B6F3-9245917A94EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
