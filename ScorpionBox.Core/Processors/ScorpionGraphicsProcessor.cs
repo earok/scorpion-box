@@ -46,9 +46,9 @@ internal class ScorpionGraphicsProcessor : IGraphicsProcessor
             }
             FinishFrame(width, height, result);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
-            Debug.WriteLine("Unable to process frame");
+            Debug.WriteLine("Unable to process frame: " + ex.Message);
         }
     }
 
@@ -73,7 +73,7 @@ internal class ScorpionGraphicsProcessor : IGraphicsProcessor
         }
         catch (Exception ex)
         {
-            Debug.WriteLine("Unable to process frame");
+            Debug.WriteLine("Unable to process frame:" + ex.ToString());
         }
     }
 

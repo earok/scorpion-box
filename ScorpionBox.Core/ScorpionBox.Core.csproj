@@ -11,19 +11,7 @@
     <PackageReference Include="NAudio" Version="2.2.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Libretro.NET\Libretro.NET.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="Cores\blastem_libretro.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="game.bin">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Cores\genesis_plus_gx_wide_libretro.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Cores\picodrive_libretro.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

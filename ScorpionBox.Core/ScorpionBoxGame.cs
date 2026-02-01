@@ -57,7 +57,7 @@ public class ScorpionBoxGame : Game
 
 
         _retro = new Wrapper(".", dll, ext);
-        if (_retro.StartGame("Cores", "genesis_plus_gx_wide", ".", "game") == false)
+        if (_retro.StartGame("Cores", "picodrive", ".", "game") == false)
         {
             throw new Exception("Could not start game");
         }
@@ -178,7 +178,7 @@ public class ScorpionBoxGame : Game
     {
         if (disposing)
         {
-            //            _retro.Dispose();
+            _retro.StopGame();
         }
 
         base.Dispose(disposing);

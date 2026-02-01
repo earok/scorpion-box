@@ -32,8 +32,8 @@ namespace SK.Libretro
             {
                 float[] floatBuffer = new float[]
                 {
-                    math.clamp(left * -0.000030517578125f, -1.0f, 1.0f),
-                    math.clamp(right * -0.000030517578125f, -1.0f, 1.0f)
+                    Mathf.Clamp(left * -0.000030517578125f, -1.0f, 1.0f),
+                    Mathf.Clamp(right * -0.000030517578125f, -1.0f, 1.0f)
                 };
 
                 AudioProcessor.ProcessSamples(floatBuffer);
@@ -48,7 +48,7 @@ namespace SK.Libretro
 
                 for (int i = 0; i < floatBuffer.Length; ++i)
                 {
-                    floatBuffer[i] = math.clamp(data[i] * 0.000030517578125f, -1.0f, 1.0f);
+                    floatBuffer[i] = Mathf.Clamp(data[i] * 0.000030517578125f, -1.0f, 1.0f);
                 }
 
                 AudioProcessor.ProcessSamples(floatBuffer);
