@@ -175,12 +175,12 @@ namespace SK.Libretro
                 }
                 else
                 {
-                    Log.Error($"Core '{coreName}' at path '{corePath}' not found.", "Libretro.LibretroCore.Start");
+                    throw new Exception($"Core '{coreName}' at path '{corePath}' not found.");
                 }
             }
-            catch (Exception e )
+            catch (Exception)
             {
-                Log.Exception(e, "Libretro.LibretroCore.Start");
+                throw;
             }
 
             return result;

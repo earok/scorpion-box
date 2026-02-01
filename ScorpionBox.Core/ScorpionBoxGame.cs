@@ -61,9 +61,13 @@ public class ScorpionBoxGame : Game
 
 
         _retro = new Wrapper(".", dll, ext);
-        if (_retro.StartGame("Cores", "blastem", ".", "game") == false)
+        try
         {
-            throw new Exception("Could not start game");
+            _retro.StartGame("Cores", "blastem", ".", "game");
+        }
+        catch(Exception ex)
+        {
+            throw new Exception("Could not start game: " + ex.ToString());
         }
     }
 

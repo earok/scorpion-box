@@ -83,15 +83,15 @@ namespace SK.Libretro
                             Running = true;
                             result = true;
                         }
-                        catch (Exception e)
+                        catch (Exception)
                         {
-                            Log.Exception(e, "Libretro.LibretroGame.Start");
+                            throw;
                         }
                     }
                 }
                 else
                 {
-                    Log.Error($"Game '{gameName}' not found in directory '{gameDirectory}'.", "Libretro.LibretroGame.Start");
+                    throw new Exception($"Game '{gameName}' not found in directory '{gameDirectory}'.");
                 }
             }
             else if (core.SupportNoGame)
@@ -107,15 +107,15 @@ namespace SK.Libretro
                         Running = true;
                         result = true;
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
-                        Log.Exception(e, "Libretro.LibretroGame.Start");
+                        throw;
                     }
                 }
             }
             else
             {
-                Log.Warning($"Game not set, running '{core.CoreName}' core only.", "Libretro.LibretroGame.Start");
+                throw new Exception($"Game not set, running '{core.CoreName}' core only.");
             }
 
             return result;
