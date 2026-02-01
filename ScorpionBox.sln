@@ -1,0 +1,57 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36705.20 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScorpionBox.Android", "ScorpionBox.Android\ScorpionBox.Android.csproj", "{3800801E-3B8B-422A-8C33-B255322955EF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScorpionBox.Core", "ScorpionBox.Core\ScorpionBox.Core.csproj", "{14F741ED-6C6E-4D1E-8E54-8AC9D3648EC9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScorpionBox.DesktopGL", "ScorpionBox.DesktopGL\ScorpionBox.DesktopGL.csproj", "{789F395C-C309-49BC-A589-982ABD7F3006}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScorpionBox.iOS", "ScorpionBox.iOS\ScorpionBox.iOS.csproj", "{D340392E-25CD-46B1-A20F-9F59D6270944}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScorpionBox.WindowsDX", "ScorpionBox.WindowsDX\ScorpionBox.WindowsDX.csproj", "{6D5A5D0F-6FB5-4B28-8E66-8FDDE50C9BA2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Libretro.NET", "Libretro.NET\Libretro.NET.csproj", "{06CDC89D-3376-E709-DFF4-A19BDB671D52}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3800801E-3B8B-422A-8C33-B255322955EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3800801E-3B8B-422A-8C33-B255322955EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3800801E-3B8B-422A-8C33-B255322955EF}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{3800801E-3B8B-422A-8C33-B255322955EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3800801E-3B8B-422A-8C33-B255322955EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3800801E-3B8B-422A-8C33-B255322955EF}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{14F741ED-6C6E-4D1E-8E54-8AC9D3648EC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14F741ED-6C6E-4D1E-8E54-8AC9D3648EC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14F741ED-6C6E-4D1E-8E54-8AC9D3648EC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14F741ED-6C6E-4D1E-8E54-8AC9D3648EC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{789F395C-C309-49BC-A589-982ABD7F3006}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{789F395C-C309-49BC-A589-982ABD7F3006}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{789F395C-C309-49BC-A589-982ABD7F3006}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{789F395C-C309-49BC-A589-982ABD7F3006}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D340392E-25CD-46B1-A20F-9F59D6270944}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D340392E-25CD-46B1-A20F-9F59D6270944}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D340392E-25CD-46B1-A20F-9F59D6270944}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D340392E-25CD-46B1-A20F-9F59D6270944}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D5A5D0F-6FB5-4B28-8E66-8FDDE50C9BA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D5A5D0F-6FB5-4B28-8E66-8FDDE50C9BA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D5A5D0F-6FB5-4B28-8E66-8FDDE50C9BA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D5A5D0F-6FB5-4B28-8E66-8FDDE50C9BA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06CDC89D-3376-E709-DFF4-A19BDB671D52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06CDC89D-3376-E709-DFF4-A19BDB671D52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06CDC89D-3376-E709-DFF4-A19BDB671D52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06CDC89D-3376-E709-DFF4-A19BDB671D52}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7E0E3079-1CC0-49B1-83A5-6DC30771928D}
+	EndGlobalSection
+EndGlobal
