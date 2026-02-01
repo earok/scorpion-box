@@ -30,8 +30,8 @@ namespace SK.Libretro.Utilities
                 }
                 else
                 {
-                    IntPtr errPtr = dlerror();
-                    string errMsg = Marshal.PtrToStringAnsi(errPtr);
+                    var errPtr = dlerror();
+                    var errMsg = Marshal.PtrToStringAnsi(errPtr);
                     throw new Exception($"dlopen failed for '{path}': {errMsg}");
                 }
             }
