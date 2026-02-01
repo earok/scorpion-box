@@ -63,7 +63,7 @@ public class ScorpionBoxGame : Game
         _retro = new Wrapper(".", dll, ext);
         try
         {
-            _retro.StartGame("Cores", "blastem", ".", "game");
+            _retro.StartGame("Cores", "picodrive", ".", "game");
         }
         catch(Exception ex)
         {
