@@ -69,6 +69,20 @@ internal class ScorpionGraphicsProcessor : IGraphicsProcessor
                 Array.Copy(raw, sourceIndex, result, destinationIndex, totalWidth);
                 destinationIndex += totalWidth;
             }
+
+            //Swap Red and Green for OpenGL
+            if(_box.PixelFormat == SurfaceFormat.Color)
+            {
+                var i = result.Length;
+                while(i > 0)
+                {
+                    i -= 4;
+                    var tmp = result[i];
+                    result[i] = result[i + 2];
+                    result[i + 2] = tmp;
+                }
+            }
+
             FinishFrame(width, height, result);
         }
         catch (Exception ex)

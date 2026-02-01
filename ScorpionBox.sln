@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScorpionBox.Core", "Scorpio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScorpionBox.WindowsDX", "ScorpionBox.WindowsDX\ScorpionBox.WindowsDX.csproj", "{6D5A5D0F-6FB5-4B28-8E66-8FDDE50C9BA2}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "ScorpionBox.Core.Windows", "ScorpionBox.Core.Windows\ScorpionBox.Core.Windows.shproj", "{A0CDBD0E-3A41-42B7-9425-A838BC2C7383}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScorpionBox.WindowsGL", "ScorpionBox.WindowsGL\ScorpionBox.WindowsGL.csproj", "{B2216699-3C2B-48ED-A902-6FFE3F1DEB08}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,11 +25,20 @@ Global
 		{6D5A5D0F-6FB5-4B28-8E66-8FDDE50C9BA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D5A5D0F-6FB5-4B28-8E66-8FDDE50C9BA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D5A5D0F-6FB5-4B28-8E66-8FDDE50C9BA2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2216699-3C2B-48ED-A902-6FFE3F1DEB08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2216699-3C2B-48ED-A902-6FFE3F1DEB08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2216699-3C2B-48ED-A902-6FFE3F1DEB08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2216699-3C2B-48ED-A902-6FFE3F1DEB08}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7E0E3079-1CC0-49B1-83A5-6DC30771928D}
+	EndGlobalSection
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		ScorpionBox.Core.Windows\ScorpionBox.Core.Windows.projitems*{6d5a5d0f-6fb5-4b28-8e66-8fdde50c9ba2}*SharedItemsImports = 5
+		ScorpionBox.Core.Windows\ScorpionBox.Core.Windows.projitems*{a0cdbd0e-3a41-42b7-9425-a838bc2c7383}*SharedItemsImports = 13
+		ScorpionBox.Core.Windows\ScorpionBox.Core.Windows.projitems*{b2216699-3c2b-48ed-a902-6ffe3f1deb08}*SharedItemsImports = 5
 	EndGlobalSection
 EndGlobal

@@ -6,6 +6,8 @@ using System.Globalization;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.Framework.Utilities;
+using NAudio.MediaFoundation;
 using ScorpionBox.Core.Localization;
 using ScorpionBox.Core.Processors;
 using SK.Libretro;
@@ -25,6 +27,7 @@ public class ScorpionBoxGame : Game
 
     // Resources for drawing.
     private GraphicsDeviceManager _graphics;
+    private SurfaceFormat _surfaceFormat888;
     private Wrapper _retro;
     private SpriteBatch _spriteBatch;
 
@@ -43,9 +46,12 @@ public class ScorpionBoxGame : Game
     /// initializes services like settings and leaderboard managers, and sets up the 
     /// screen manager for screen transitions.
     /// </summary>
-    public ScorpionBoxGame(DllModule dll, string ext)
+    public ScorpionBoxGame(DllModule dll, 
+        string ext, 
+        SurfaceFormat surfaceFormat888 = SurfaceFormat.Color)
     {
         _graphics = new GraphicsDeviceManager(this);
+        _surfaceFormat888 = surfaceFormat888;
 
         // Share GraphicsDeviceManager as a service.
         Services.AddService(typeof(GraphicsDeviceManager), _graphics);
@@ -57,7 +63,7 @@ public class ScorpionBoxGame : Game
 
 
         _retro = new Wrapper(".", dll, ext);
-        if (_retro.StartGame("Cores", "picodrive", ".", "game") == false)
+        if (_retro.StartGame("Cores", "blastem", ".", "game") == false)
         {
             throw new Exception("Could not start game");
         }
@@ -87,8 +93,7 @@ public class ScorpionBoxGame : Game
         {
             retro_pixel_format.RETRO_PIXEL_FORMAT_RGB565 => SurfaceFormat.Bgr565,
             retro_pixel_format.RETRO_PIXEL_FORMAT_0RGB1555 => SurfaceFormat.Bgra5551,
-            retro_pixel_format.RETRO_PIXEL_FORMAT_XRGB8888 => SurfaceFormat.Bgra32,
-            //            retro_pixel_format.RETRO_PIXEL_FORMAT_UNKNOWN => SurfaceFormat.Bgr565,
+            retro_pixel_format.RETRO_PIXEL_FORMAT_XRGB8888 => _surfaceFormat888,
             _ => SurfaceFormat.Bgr565,
         };
 
