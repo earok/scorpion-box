@@ -7,13 +7,16 @@ namespace SK.Libretro.Utilities
     public sealed class DllModuleMacOS : DllModule
     {
         [DllImport("libc.dylib", EntryPoint = "dlopen")]
-        private static extern IntPtr MacOSLoadLibrary([MarshalAs(UnmanagedType.LPTStr)] string lpLibFileName, int flags);
+        private static extern IntPtr MacOSLoadLibrary([MarshalAs(UnmanagedType.LPStr)] string path, int flags);
 
         [DllImport("libc.dylib", EntryPoint = "dlsym")]
-        private static extern IntPtr MacOSGetProcAddress(IntPtr hModule, [MarshalAs(UnmanagedType.LPStr)] string lpProcName);
+        private static extern IntPtr MacOSGetProcAddress(IntPtr hModule, string lpProcName);
 
         [DllImport("libc.dylib", EntryPoint = "dlclose")]
-        private static extern bool MacOSFreeLibrary(IntPtr hModule);
+        private static extern int MacOSFreeLibrary(IntPtr hModule);
+
+        [DllImport("libc.dylib", EntryPoint = "dlerror")]
+        private static extern IntPtr dlerror();
 
         public override void Load(string path)
         {
@@ -27,7 +30,9 @@ namespace SK.Libretro.Utilities
                 }
                 else
                 {
-                    throw new Exception($"Failed to load library at path '{path}'");
+                    IntPtr errPtr = dlerror();
+                    string errMsg = Marshal.PtrToStringAnsi(errPtr);
+                    throw new Exception($"dlopen failed for '{path}': {errMsg}");
                 }
             }
             else
