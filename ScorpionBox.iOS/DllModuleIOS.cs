@@ -1,35 +1,25 @@
-﻿#if ANDROID
-
-using System;
+﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
 
 namespace SK.Libretro.Utilities
 {
-    public sealed class DllModuleAndroid : DllModule
+    public sealed class DllModuleIOS : DllModule
     {
-        [DllImport("libdl.so", EntryPoint = "dlopen")]
-        private static extern IntPtr dlopen (String fileName, int flags);
+        [DllImport("libc.dylib", EntryPoint = "dlopen")]
+        private static extern IntPtr MacOSLoadLibrary([MarshalAs(UnmanagedType.LPTStr)] string lpLibFileName, int flags);
 
-        [DllImport("libdl.so", EntryPoint = "dlsym")]
-        private static extern IntPtr dlsym (IntPtr handle, String symbol);
+        [DllImport("libc.dylib", EntryPoint = "dlsym")]
+        private static extern IntPtr MacOSGetProcAddress(IntPtr hModule, [MarshalAs(UnmanagedType.LPStr)] string lpProcName);
 
-        [DllImport("libdl.so", EntryPoint = "dlclose")]
-        private static extern int dlclose (IntPtr handle);
-
-        [DllImport("libdl.so", EntryPoint = "dlerror")]
-        private static extern IntPtr dlerror ();
+        [DllImport("libc.dylib", EntryPoint = "dlclose")]
+        private static extern bool MacOSFreeLibrary(IntPtr hModule);
 
         public override void Load(string path)
         {
             if (!string.IsNullOrEmpty(path))
             {
-                IntPtr hModule = dlopen(path, 2); // 2 is for RTLD_NOW
-                var errPtr = dlerror ();
-                if (errPtr != IntPtr.Zero) {
-                    var errString =  Marshal.PtrToStringAnsi (errPtr);
-                    throw new Exception($"Failed to load library at path '{path}' error '{errString}'");
-                }
+                IntPtr hModule = MacOSLoadLibrary(path, 2); // 2 is for RTLD_NOW
                 if (hModule != IntPtr.Zero)
                 {
                     Name = Path.GetFileName(path);
@@ -50,7 +40,7 @@ namespace SK.Libretro.Utilities
         {
             if (_nativeHandle != IntPtr.Zero)
             {
-                IntPtr procAddress = dlsym(_nativeHandle, functionName);
+                IntPtr procAddress = MacOSGetProcAddress(_nativeHandle, functionName);
                 if (procAddress != IntPtr.Zero)
                 {
                     return Marshal.GetDelegateForFunctionPointer<T>(procAddress);
@@ -70,9 +60,8 @@ namespace SK.Libretro.Utilities
         {
             if (_nativeHandle != IntPtr.Zero)
             {
-                _ = dlclose(_nativeHandle);
+                _ = MacOSFreeLibrary(_nativeHandle);
             }
         }
     }
 }
-#endif
