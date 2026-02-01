@@ -4,11 +4,10 @@ using System.Globalization;
 using Libretro.NET;
 using Libretro.NET.Bindings;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using ScorpionBox.Core.Localization;
-using static System.Net.Mime.MediaTypeNames;
+using SK.Libretro;
 
 namespace ScorpionBox.Core;
 /// <summary>
@@ -21,9 +20,9 @@ public class ScorpionBoxGame : Game
     private GraphicsDeviceManager _graphics;
     private RetroWrapper _retro;
     private SurfaceFormat _pixelFormat;
-    private DynamicSoundEffectInstance _soundEffect;
     private Texture2D _currentTexture;
     private SpriteBatch _spriteBatch;
+    private bool _isRunning = true;
 
     /// <summary>
     /// Indicates if the game is running on a mobile platform.
@@ -78,15 +77,12 @@ public class ScorpionBoxGame : Game
             _ => SurfaceFormat.Bgr565,
         };
 
-        var sampleRate = Math.Min(48000, (int)_retro.SampleRate);
-        _soundEffect = new DynamicSoundEffectInstance(sampleRate, AudioChannels.Stereo);
-        _soundEffect.Play();
-
         _retro.OnFrame = OnFrame;
-        _retro.OnSample = OnSample;
         _retro.OnCheckInput = OnCheckInput;
 
-        base.Initialize();
+        var processor = new NAudioAudioProcessor();
+        processor.Init((int)_retro.SampleRate);
+        _retro.OnSample = processor.ProcessSamples;
 
         // Load supported languages and set the default language.
         List<CultureInfo> cultures = LocalizationManager.GetSupportedCultures();
@@ -100,6 +96,8 @@ public class ScorpionBoxGame : Game
         // based on what the user or operating system selected.
         var selectedLanguage = LocalizationManager.DEFAULT_CULTURE_CODE;
         LocalizationManager.SetCulture(selectedLanguage);
+
+        base.Initialize();
     }
 
     private bool OnCheckInput(uint port, uint device, uint index, uint id)
@@ -124,11 +122,7 @@ public class ScorpionBoxGame : Game
 
     private void OnSample(byte[] sample)
     {
-        if(_soundEffect.PendingBufferCount >= 64)
-        {
-            return;
-        }
-        _soundEffect.SubmitBuffer(sample);
+        //To implement
     }
 
     private void OnFrame(byte[] frame, uint width, uint height)
@@ -194,6 +188,7 @@ public class ScorpionBoxGame : Game
 
     protected override void Dispose(bool disposing)
     {
+        _isRunning = false;
         if (disposing)
         {
             _retro.Dispose();

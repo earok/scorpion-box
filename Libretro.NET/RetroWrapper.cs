@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using Libretro.NET.Bindings;
 
 namespace Libretro.NET
@@ -26,7 +27,7 @@ namespace Libretro.NET
         public delegate void OnFrameDelegate(byte[] frame, uint width, uint height);
         public OnFrameDelegate OnFrame { get; set; }
 
-        public delegate void OnSampleDelegate(byte[] sample);
+        public delegate void OnSampleDelegate(float[] sample);
         public OnSampleDelegate OnSample { get; set; }
 
         public delegate bool OnCheckInputDelegate(uint port, uint device, uint index, uint id);
@@ -158,8 +159,11 @@ namespace Libretro.NET
 
         private void AudioSample(short left, short right)
         {
+            //To implement this
+            throw new NotImplementedException();
+
             var count = 2;
-            var audio = new byte[count*2];
+            var audio = new float[count*2];
             var data = Marshal.AllocHGlobal(count * 2);
 
             Marshal.Copy(new[] { left, right }, 0, data, 0);
@@ -171,12 +175,27 @@ namespace Libretro.NET
         private UIntPtr AudioSampleBatch(short* data, UIntPtr frames)
         {
             var count = (int)frames * 2;
-            var audio = new byte[count*2];
+            float[] floatBuffer = new float[count];
 
-            Marshal.Copy((IntPtr)data, audio, 0, count*2);
+            for (int i = 0; i < floatBuffer.Length; ++i)
+            {
+                var f = data[i] * 0.000030517578125f;
+                //todo implement math clamp function
+                if(f < -1)
+                {
+                    floatBuffer[i] = -1;
+                }
+                else if(f > 1)
+                {
+                    floatBuffer[i] = 1;
+                }
+                else
+                {
+                    floatBuffer[i] = f;
+                }
+            }
 
-            OnSample?.Invoke(audio);
-
+            OnSample?.Invoke(floatBuffer);
             return frames;
         }
 
