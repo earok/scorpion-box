@@ -121,6 +121,11 @@ namespace SK.Libretro
 
         public unsafe bool Start(Wrapper wrapper, string coreDirectory, string coreName )
         {
+            if(string.IsNullOrEmpty(coreName))
+            {
+                throw new Exception("Core named undefined");
+            }
+
             _wrapper = wrapper;
             
             bool result = false;
@@ -209,11 +214,13 @@ namespace SK.Libretro
 
                 _dll.Free();
 
+                /*
                 string dllPath = FileSystem.GetAbsolutePath($"{_wrapper.TempDirectory}/{_dll.Name}");
                 if (File.Exists(dllPath))
                 {
                     File.Delete(dllPath);
                 }
+                */
             }
             catch (Exception e)
             {
