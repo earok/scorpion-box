@@ -44,7 +44,7 @@ namespace SK.Libretro.Utilities
                 IntPtr hModule = Win32LoadLibrary(path);
                 if (hModule != IntPtr.Zero)
                 {
-                    Name          = Path.GetFileName(path);
+                    Name = Path.GetFileName(path);
                     _nativeHandle = hModule;
                 }
                 else

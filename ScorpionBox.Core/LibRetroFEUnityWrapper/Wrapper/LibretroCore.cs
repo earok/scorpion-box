@@ -20,13 +20,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-using SK.Libretro.Utilities;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Runtime.InteropServices;
-using static SK.Libretro.Wrapper;
+using SK.Libretro.Utilities;
 using static SK.Libretro.Utilities.StringUtils;
+using static SK.Libretro.Wrapper;
 
 namespace SK.Libretro
 {
@@ -91,6 +90,7 @@ namespace SK.Libretro
         public bool HasInputDescriptors;
 
         public CoreOptions CoreOptions;
+        public Dictionary<uint, uint> PortDevices;
 
         public retro_controller_info[] ControllerPorts;
 
@@ -119,15 +119,15 @@ namespace SK.Libretro
             _extension = extension;
         }
 
-        public unsafe bool Start(Wrapper wrapper, string coreDirectory, string coreName )
+        public unsafe bool Start(Wrapper wrapper, string coreDirectory, string coreName)
         {
-            if(string.IsNullOrEmpty(coreName))
+            if (string.IsNullOrEmpty(coreName))
             {
                 throw new Exception("Core named undefined");
             }
 
             _wrapper = wrapper;
-            
+
             bool result = false;
 
             try
@@ -169,12 +169,17 @@ namespace SK.Libretro
 
                     retro_set_environment(_environmentCallback);
                     retro_init();
+
+                    foreach(var controller in PortDevices)
+                    {
+                        retro_set_controller_port_device(controller.Key, (retro_device)controller.Value);
+                    }
+
                     retro_set_video_refresh(_videoRefreshCallback);
                     retro_set_audio_sample(_audioSampleCallback);
                     retro_set_audio_sample_batch(_audioSampleBatchCallback);
                     retro_set_input_poll(_inputPollCallback);
                     retro_set_input_state(_inputStateCallback);
-
                     Initialized = true;
                     result = true;
                 }
@@ -232,31 +237,31 @@ namespace SK.Libretro
         {
             try
             {
-                retro_set_environment            = _dll.GetFunction<retro_set_environment_t>("retro_set_environment");
-                retro_set_video_refresh          = _dll.GetFunction<retro_set_video_refresh_t>("retro_set_video_refresh");
-                retro_set_audio_sample           = _dll.GetFunction<retro_set_audio_sample_t>("retro_set_audio_sample");
-                retro_set_audio_sample_batch     = _dll.GetFunction<retro_set_audio_sample_batch_t>("retro_set_audio_sample_batch");
-                retro_set_input_poll             = _dll.GetFunction<retro_set_input_poll_t>("retro_set_input_poll");
-                retro_set_input_state            = _dll.GetFunction<retro_set_input_state_t>("retro_set_input_state");
-                retro_init                       = _dll.GetFunction<retro_init_t>("retro_init");
-                retro_deinit                     = _dll.GetFunction<retro_deinit_t>("retro_deinit");
-                retro_api_version                = _dll.GetFunction<retro_api_version_t>("retro_api_version");
-                retro_get_system_info            = _dll.GetFunction<retro_get_system_info_t>("retro_get_system_info");
-                retro_get_system_av_info         = _dll.GetFunction<retro_get_system_av_info_t>("retro_get_system_av_info");
+                retro_set_environment = _dll.GetFunction<retro_set_environment_t>("retro_set_environment");
+                retro_set_video_refresh = _dll.GetFunction<retro_set_video_refresh_t>("retro_set_video_refresh");
+                retro_set_audio_sample = _dll.GetFunction<retro_set_audio_sample_t>("retro_set_audio_sample");
+                retro_set_audio_sample_batch = _dll.GetFunction<retro_set_audio_sample_batch_t>("retro_set_audio_sample_batch");
+                retro_set_input_poll = _dll.GetFunction<retro_set_input_poll_t>("retro_set_input_poll");
+                retro_set_input_state = _dll.GetFunction<retro_set_input_state_t>("retro_set_input_state");
+                retro_init = _dll.GetFunction<retro_init_t>("retro_init");
+                retro_deinit = _dll.GetFunction<retro_deinit_t>("retro_deinit");
+                retro_api_version = _dll.GetFunction<retro_api_version_t>("retro_api_version");
+                retro_get_system_info = _dll.GetFunction<retro_get_system_info_t>("retro_get_system_info");
+                retro_get_system_av_info = _dll.GetFunction<retro_get_system_av_info_t>("retro_get_system_av_info");
                 retro_set_controller_port_device = _dll.GetFunction<retro_set_controller_port_device_t>("retro_set_controller_port_device");
-                retro_reset                      = _dll.GetFunction<retro_reset_t>("retro_reset");
-                retro_run                        = _dll.GetFunction<retro_run_t>("retro_run");
-                retro_serialize_size             = _dll.GetFunction<retro_serialize_size_t>("retro_serialize_size");
-                retro_serialize                  = _dll.GetFunction<retro_serialize_t>("retro_serialize");
-                retro_unserialize                = _dll.GetFunction<retro_unserialize_t>("retro_unserialize");
-                retro_cheat_reset                = _dll.GetFunction<retro_cheat_reset_t>("retro_cheat_reset");
-                retro_cheat_set                  = _dll.GetFunction<retro_cheat_set_t>("retro_cheat_set");
-                retro_load_game                  = _dll.GetFunction<retro_load_game_t>("retro_load_game");
-                retro_load_game_special          = _dll.GetFunction<retro_load_game_special_t>("retro_load_game_special");
-                retro_unload_game                = _dll.GetFunction<retro_unload_game_t>("retro_unload_game");
-                retro_get_region                 = _dll.GetFunction<retro_get_region_t>("retro_get_region");
-                retro_get_memory_data            = _dll.GetFunction<retro_get_memory_data_t>("retro_get_memory_data");
-                retro_get_memory_size            = _dll.GetFunction<retro_get_memory_size_t>("retro_get_memory_size");
+                retro_reset = _dll.GetFunction<retro_reset_t>("retro_reset");
+                retro_run = _dll.GetFunction<retro_run_t>("retro_run");
+                retro_serialize_size = _dll.GetFunction<retro_serialize_size_t>("retro_serialize_size");
+                retro_serialize = _dll.GetFunction<retro_serialize_t>("retro_serialize");
+                retro_unserialize = _dll.GetFunction<retro_unserialize_t>("retro_unserialize");
+                retro_cheat_reset = _dll.GetFunction<retro_cheat_reset_t>("retro_cheat_reset");
+                retro_cheat_set = _dll.GetFunction<retro_cheat_set_t>("retro_cheat_set");
+                retro_load_game = _dll.GetFunction<retro_load_game_t>("retro_load_game");
+                retro_load_game_special = _dll.GetFunction<retro_load_game_special_t>("retro_load_game_special");
+                retro_unload_game = _dll.GetFunction<retro_unload_game_t>("retro_unload_game");
+                retro_get_region = _dll.GetFunction<retro_get_region_t>("retro_get_region");
+                retro_get_memory_data = _dll.GetFunction<retro_get_memory_data_t>("retro_get_memory_data");
+                retro_get_memory_size = _dll.GetFunction<retro_get_memory_size_t>("retro_get_memory_size");
             }
             catch (Exception)
             {
@@ -266,31 +271,31 @@ namespace SK.Libretro
 
         private unsafe void SetCallbacks(Wrapper wrapper)
         {
-            _environmentCallback      = wrapper.RetroEnvironmentCallback;
-            _videoRefreshCallback     = wrapper.RetroVideoRefreshCallback;
-            _audioSampleCallback      = wrapper.RetroAudioSampleCallback;
+            _environmentCallback = wrapper.RetroEnvironmentCallback;
+            _videoRefreshCallback = wrapper.RetroVideoRefreshCallback;
+            _audioSampleCallback = wrapper.RetroAudioSampleCallback;
             _audioSampleBatchCallback = wrapper.RetroAudioSampleBatchCallback;
-            _inputPollCallback        = wrapper.RetroInputPollCallback;
-            _inputStateCallback       = wrapper.RetroInputStateCallback;
-            _logPrintfCallback        = wrapper.RetroLogPrintf;
-            _perfGetTimeUsecCallback  = wrapper.RetroPerfGetTimeUsec;
-            _perfGetCounterCallback   = wrapper.RetroPerfGetCounter;
-            _getCPUFeaturesCallback   = wrapper.RetroGetCPUFeatures;
-            _perfLogCallback          = wrapper.RetroPerfLog;
-            _perfRegisterCallback     = wrapper.RetroPerfRegister;
-            _perfStartCallback        = wrapper.RetroPerfStart;
-            _perfStopCallback         = wrapper.RetroPerfStop;
+            _inputPollCallback = wrapper.RetroInputPollCallback;
+            _inputStateCallback = wrapper.RetroInputStateCallback;
+            _logPrintfCallback = wrapper.RetroLogPrintf;
+            _perfGetTimeUsecCallback = wrapper.RetroPerfGetTimeUsec;
+            _perfGetCounterCallback = wrapper.RetroPerfGetCounter;
+            _getCPUFeaturesCallback = wrapper.RetroGetCPUFeatures;
+            _perfLogCallback = wrapper.RetroPerfLog;
+            _perfRegisterCallback = wrapper.RetroPerfRegister;
+            _perfStartCallback = wrapper.RetroPerfStart;
+            _perfStopCallback = wrapper.RetroPerfStop;
         }
 
         public IntPtr GetLogCallback() => Marshal.GetFunctionPointerForDelegate(_logPrintfCallback);
 
         public IntPtr GetPerfGetTimeUsecCallback() => Marshal.GetFunctionPointerForDelegate(_perfGetTimeUsecCallback);
-        public IntPtr GetPerfGetCounterCallback()  => Marshal.GetFunctionPointerForDelegate(_perfGetCounterCallback);
-        public IntPtr GetGetCPUFeaturesCallback()  => Marshal.GetFunctionPointerForDelegate(_getCPUFeaturesCallback);
-        public IntPtr GetPerfLogCallback()         => Marshal.GetFunctionPointerForDelegate(_perfLogCallback);
-        public IntPtr GetPerfRegisterCallback()    => Marshal.GetFunctionPointerForDelegate(_perfRegisterCallback);
-        public IntPtr GetPerfStartCallback()       => Marshal.GetFunctionPointerForDelegate(_perfStartCallback);
-        public IntPtr GetPerfStopCallback()        => Marshal.GetFunctionPointerForDelegate(_perfStopCallback);
+        public IntPtr GetPerfGetCounterCallback() => Marshal.GetFunctionPointerForDelegate(_perfGetCounterCallback);
+        public IntPtr GetGetCPUFeaturesCallback() => Marshal.GetFunctionPointerForDelegate(_getCPUFeaturesCallback);
+        public IntPtr GetPerfLogCallback() => Marshal.GetFunctionPointerForDelegate(_perfLogCallback);
+        public IntPtr GetPerfRegisterCallback() => Marshal.GetFunctionPointerForDelegate(_perfRegisterCallback);
+        public IntPtr GetPerfStartCallback() => Marshal.GetFunctionPointerForDelegate(_perfStartCallback);
+        public IntPtr GetPerfStopCallback() => Marshal.GetFunctionPointerForDelegate(_perfStopCallback);
 
         public void SetFrameTimeCallback(IntPtr callback, long reference)
         {

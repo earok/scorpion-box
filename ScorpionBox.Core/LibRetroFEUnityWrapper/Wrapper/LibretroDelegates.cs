@@ -151,7 +151,7 @@ namespace SK.Libretro
         public delegate void retro_input_poll_t();
 
         // typedef int16_t(RETRO_CALLCONV* retro_input_state_t)(unsigned port, unsigned device, unsigned index, unsigned id);
-        public delegate short retro_input_state_t(uint port, retro_device device, uint index, uint id);
+        public delegate short retro_input_state_t(uint port, uint device, uint index, uint id);
         #endregion
 
         #region VFS functions

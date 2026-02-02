@@ -20,12 +20,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-using SK.Libretro.Utilities;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using static SK.Libretro.Wrapper;
+using SK.Libretro.Utilities;
 using static SK.Libretro.Utilities.StringUtils;
+using static SK.Libretro.Wrapper;
 
 namespace SK.Libretro
 {

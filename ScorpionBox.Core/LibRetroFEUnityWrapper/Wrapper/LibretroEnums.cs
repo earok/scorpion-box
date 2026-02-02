@@ -26,25 +26,25 @@ namespace SK.Libretro
     {
         private enum retro_language
         {
-            RETRO_LANGUAGE_ENGLISH             = 0,
-            RETRO_LANGUAGE_JAPANESE            = 1,
-            RETRO_LANGUAGE_FRENCH              = 2,
-            RETRO_LANGUAGE_SPANISH             = 3,
-            RETRO_LANGUAGE_GERMAN              = 4,
-            RETRO_LANGUAGE_ITALIAN             = 5,
-            RETRO_LANGUAGE_DUTCH               = 6,
-            RETRO_LANGUAGE_PORTUGUESE_BRAZIL   = 7,
+            RETRO_LANGUAGE_ENGLISH = 0,
+            RETRO_LANGUAGE_JAPANESE = 1,
+            RETRO_LANGUAGE_FRENCH = 2,
+            RETRO_LANGUAGE_SPANISH = 3,
+            RETRO_LANGUAGE_GERMAN = 4,
+            RETRO_LANGUAGE_ITALIAN = 5,
+            RETRO_LANGUAGE_DUTCH = 6,
+            RETRO_LANGUAGE_PORTUGUESE_BRAZIL = 7,
             RETRO_LANGUAGE_PORTUGUESE_PORTUGAL = 8,
-            RETRO_LANGUAGE_RUSSIAN             = 9,
-            RETRO_LANGUAGE_KOREAN              = 10,
+            RETRO_LANGUAGE_RUSSIAN = 9,
+            RETRO_LANGUAGE_KOREAN = 10,
             RETRO_LANGUAGE_CHINESE_TRADITIONAL = 11,
-            RETRO_LANGUAGE_CHINESE_SIMPLIFIED  = 12,
-            RETRO_LANGUAGE_ESPERANTO           = 13,
-            RETRO_LANGUAGE_POLISH              = 14,
-            RETRO_LANGUAGE_VIETNAMESE          = 15,
-            RETRO_LANGUAGE_ARABIC              = 16,
-            RETRO_LANGUAGE_GREEK               = 17,
-            RETRO_LANGUAGE_TURKISH             = 18,
+            RETRO_LANGUAGE_CHINESE_SIMPLIFIED = 12,
+            RETRO_LANGUAGE_ESPERANTO = 13,
+            RETRO_LANGUAGE_POLISH = 14,
+            RETRO_LANGUAGE_VIETNAMESE = 15,
+            RETRO_LANGUAGE_ARABIC = 16,
+            RETRO_LANGUAGE_GREEK = 17,
+            RETRO_LANGUAGE_TURKISH = 18,
             RETRO_LANGUAGE_LAST
         };
 
@@ -206,22 +206,22 @@ namespace SK.Libretro
             RETROKMOD_NONE = 0x0000,
 
             RETROKMOD_SHIFT = 0x01,
-            RETROKMOD_CTRL  = 0x02,
-            RETROKMOD_ALT   = 0x04,
-            RETROKMOD_META  = 0x08,
+            RETROKMOD_CTRL = 0x02,
+            RETROKMOD_ALT = 0x04,
+            RETROKMOD_META = 0x08,
 
-            RETROKMOD_NUMLOCK   = 0x10,
-            RETROKMOD_CAPSLOCK  = 0x20,
+            RETROKMOD_NUMLOCK = 0x10,
+            RETROKMOD_CAPSLOCK = 0x20,
             RETROKMOD_SCROLLOCK = 0x40
         }
 
         private enum retro_hw_render_interface_type
         {
-            RETRO_HW_RENDER_INTERFACE_VULKAN    = 0,
-            RETRO_HW_RENDER_INTERFACE_D3D9      = 1,
-            RETRO_HW_RENDER_INTERFACE_D3D10     = 2,
-            RETRO_HW_RENDER_INTERFACE_D3D11     = 3,
-            RETRO_HW_RENDER_INTERFACE_D3D12     = 4,
+            RETRO_HW_RENDER_INTERFACE_VULKAN = 0,
+            RETRO_HW_RENDER_INTERFACE_D3D9 = 1,
+            RETRO_HW_RENDER_INTERFACE_D3D10 = 2,
+            RETRO_HW_RENDER_INTERFACE_D3D11 = 3,
+            RETRO_HW_RENDER_INTERFACE_D3D12 = 4,
             RETRO_HW_RENDER_INTERFACE_GSKIT_PS2 = 5
         }
 
@@ -233,8 +233,8 @@ namespace SK.Libretro
         public enum retro_log_level
         {
             RETRO_LOG_DEBUG = 0,
-            RETRO_LOG_INFO  = 1,
-            RETRO_LOG_WARN  = 2,
+            RETRO_LOG_INFO = 1,
+            RETRO_LOG_WARN = 2,
             RETRO_LOG_ERROR = 3
         }
 
@@ -257,26 +257,26 @@ namespace SK.Libretro
         private enum retro_rumble_effect
         {
             RETRO_RUMBLE_STRONG = 0,
-            RETRO_RUMBLE_WEAK   = 1
+            RETRO_RUMBLE_WEAK = 1
         }
 
         private enum retro_hw_context_type
         {
-            RETRO_HW_CONTEXT_NONE             = 0,
-            RETRO_HW_CONTEXT_OPENGL           = 1,
-            RETRO_HW_CONTEXT_OPENGLES2        = 2,
-            RETRO_HW_CONTEXT_OPENGL_CORE      = 3,
-            RETRO_HW_CONTEXT_OPENGLES3        = 4,
+            RETRO_HW_CONTEXT_NONE = 0,
+            RETRO_HW_CONTEXT_OPENGL = 1,
+            RETRO_HW_CONTEXT_OPENGLES2 = 2,
+            RETRO_HW_CONTEXT_OPENGL_CORE = 3,
+            RETRO_HW_CONTEXT_OPENGLES3 = 4,
             RETRO_HW_CONTEXT_OPENGLES_VERSION = 5,
-            RETRO_HW_CONTEXT_VULKAN           = 6,
-            RETRO_HW_CONTEXT_DIRECT3D         = 7
+            RETRO_HW_CONTEXT_VULKAN = 6,
+            RETRO_HW_CONTEXT_DIRECT3D = 7
         }
 
         public enum retro_pixel_format
         {
             RETRO_PIXEL_FORMAT_0RGB1555 = 0,
             RETRO_PIXEL_FORMAT_XRGB8888 = 1,
-            RETRO_PIXEL_FORMAT_RGB565   = 2
+            RETRO_PIXEL_FORMAT_RGB565 = 2
         }
     }
 }

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework.Input;
 using SK.Libretro;
 using static SK.Libretro.Wrapper;
 
@@ -21,11 +16,11 @@ internal class ScorpionInputProcessor : IInputProcessor
     public bool JoypadButton(int port, int button)
     {
         var state = Keyboard.GetState();
-        if(_box.KeyDictionary.TryGetValue(port,out var portData))
+        if (_box.KeyDictionary.TryGetValue(port, out var portData))
         {
-            if(portData.TryGetValue((retro_device_id_joypad)button,out var key))
+            if (portData.TryGetValue((retro_device_id_joypad)button, out var key))
             {
-                if(state.IsKeyDown(key))
+                if (state.IsKeyDown(key))
                 {
                     return true;
                 }
@@ -34,9 +29,9 @@ internal class ScorpionInputProcessor : IInputProcessor
 
         //If we get to here, we should try the gamepad instead
         var gpState = GamePad.GetState(port);
-        if(gpState.IsConnected)
+        if (gpState.IsConnected)
         {
-            switch((retro_device_id_joypad)button)
+            switch ((retro_device_id_joypad)button)
             {
                 case retro_device_id_joypad.RETRO_DEVICE_ID_JOYPAD_LEFT:
                     return gpState.DPad.Left == ButtonState.Pressed || gpState.ThumbSticks.Left.X < -DeadZone;

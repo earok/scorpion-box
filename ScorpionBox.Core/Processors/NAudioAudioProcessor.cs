@@ -20,11 +20,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-using NAudio.Wave;
-using SK.Libretro;
-using SK.Libretro.Utilities;
 using System;
 using System.Diagnostics;
+using NAudio.Wave;
+using SK.Libretro;
 
 namespace ScorpionBox.Core.Processors
 {
@@ -50,7 +49,7 @@ namespace ScorpionBox.Core.Processors
                 _bufferedWaveProvider = new BufferedWaveProvider(audioFormat)
                 {
                     DiscardOnBufferOverflow = true,
-                    BufferLength            = AUDIO_BUFFER_SIZE
+                    BufferLength = AUDIO_BUFFER_SIZE
                 };
 
                 _audioDevice.Init(_bufferedWaveProvider);

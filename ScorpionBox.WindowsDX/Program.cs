@@ -1,8 +1,6 @@
 ﻿using System.Windows.Forms;
 using Microsoft.Xna.Framework.Graphics;
-using ScorpionBox.Core;
 using ScorpionBox.Core.Windows;
-using SK.Libretro.Utilities;
 
 internal class Program
 {

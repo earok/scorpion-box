@@ -20,8 +20,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
-using SK.Libretro.Utilities;
+using System.Collections.Generic;
 using System.Linq;
+using SK.Libretro.Utilities;
+using static SK.Libretro.Wrapper;
 
 namespace SK.Libretro
 {
@@ -56,18 +58,19 @@ namespace SK.Libretro
             _rootDirectory = rootDirectory;
             CoreOptionsFile = $"{_rootDirectory}/core_options.json";
             WrapperDirectory = $"{_rootDirectory}/libretro~";
-            CoresDirectory   = $"{WrapperDirectory}/cores";
-            SystemDirectory  = $"{WrapperDirectory}/system";
-            SavesDirectory   = $"{WrapperDirectory}/saves";
-            TempDirectory    = $"{WrapperDirectory}/temp";
+            CoresDirectory = $"{WrapperDirectory}/cores";
+            SystemDirectory = $"{WrapperDirectory}/system";
+            SavesDirectory = $"{WrapperDirectory}/saves";
+            TempDirectory = $"{WrapperDirectory}/temp";
             ExtractDirectory = $"{TempDirectory}/extracted";
         }
 
-        public bool StartGame(string coreDirectory, string coreName, string gameDirectory, string gameName)
+        public bool StartGame(string coreDirectory, string coreName, string gameDirectory, string gameName, CoreOptionsList coreOptions, Dictionary<uint, uint> coreDevices)
         {
             bool result = false;
-
-            LoadCoreOptionsFile();
+            _coreOptionsList = coreOptions;
+            Core.CoreOptions = _coreOptionsList.Cores.FirstOrDefault(p => p.CoreName.ToLowerInvariant().Trim() == coreName.ToLowerInvariant().Trim());
+            Core.PortDevices = coreDevices;
 
             if (Core.Start(this, coreDirectory, coreName))
             {
@@ -96,6 +99,8 @@ namespace SK.Libretro
             }
 
             Core.retro_run();
+
+
         }
 
         public void ActivateGraphics(IGraphicsProcessor graphicsProcessor)

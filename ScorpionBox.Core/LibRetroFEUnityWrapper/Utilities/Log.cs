@@ -21,40 +21,67 @@
  * SOFTWARE. */
 
 using System;
-using System.Reflection;
+using System.IO;
 using LibRetroFE_WrapperOnly.Compatibility;
 
 namespace SK.Libretro.Utilities
 {
     public static class Log
     {
+        private static StreamWriter _log;
+
+        static Log()
+        {
+            var path = "log.txt";
+            if (File.Exists(path))
+                File.Delete(path);
+
+            var fs = new FileStream(
+                path,
+                FileMode.Create,
+                FileAccess.Write,
+                FileShare.Read,
+                bufferSize: 1,
+                useAsync: false
+            );
+
+            _log = new StreamWriter(fs)
+            {
+                AutoFlush = true
+            };
+
+            Console.SetOut(_log);
+            Console.SetError(_log);
+        }
+
         public static void Info(string message, string caller = null)
         {
-            LogInternal("<color=yellow>[INFO]</color>", message, caller);
+            LogInternal("[INFO]", message, caller);
         }
 
         public static void Success(string message, string caller = null)
         {
-            LogInternal("<color=green>[SUCCESS]</color>", message, caller);
+            LogInternal("[SUCCESS]", message, caller);
         }
 
         public static void Warning(string message, string caller = null)
         {
-            LogInternal("<color=orange>[WARNING]</color>", message, caller);
+            LogInternal("[WARNING]", message, caller);
         }
 
         public static void Error(string message, string caller = null)
         {
-            LogInternal("<color=red>[ERROR]</color>", message, caller);
+            LogInternal("[ERROR]", message, caller);
         }
 
         public static void Exception(Exception e, string caller = null)
         {
-            LogInternal("<color=red>[EXCEPTION]</color>", e.Message, caller);
+            LogInternal("[EXCEPTION]", e.Message, caller);
         }
 
         private static void LogInternal(string prefix, string message, string caller)
         {
+            _log.WriteLine(prefix + ":" + message);
             Debug.Log($"{prefix} {(string.IsNullOrEmpty(caller) ? "" : $"<color=lightblue>[{caller}]</color> ")}{message}");
         }
         public static void ClearConsole()

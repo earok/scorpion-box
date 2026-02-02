@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MonoGame.Framework.Utilities;
-using NAudio.MediaFoundation;
 using ScorpionBox.Core.Localization;
 using ScorpionBox.Core.Processors;
 using SK.Libretro;
 using SK.Libretro.Utilities;
 using static SK.Libretro.Wrapper;
-//using SK.Libretro.Utilities;
 
 namespace ScorpionBox.Core;
 /// <summary>
@@ -44,6 +42,7 @@ public class ScorpionBoxGame : Game
     private bool _startFullScreen;
 
     public Dictionary<int, Dictionary<retro_device_id_joypad, Keys>> KeyDictionary = [];
+    private StreamWriter _log;
 
     /// <summary>
     /// Indicates if the game is running on a mobile platform.
@@ -64,7 +63,9 @@ public class ScorpionBoxGame : Game
         string ext,
         SurfaceFormat surfaceFormat888 = SurfaceFormat.Color)
     {
-        ReadConfig();
+        var portDevices = new Dictionary<uint, uint>();
+        var coreOptionsList = new CoreOptionsList();
+        ReadConfig(coreOptionsList, portDevices);
 
         _graphics = new GraphicsDeviceManager(this);
         _surfaceFormat888 = surfaceFormat888;
@@ -77,11 +78,15 @@ public class ScorpionBoxGame : Game
         // Configure screen orientations.
         _graphics.SupportedOrientations = DisplayOrientation.LandscapeLeft | DisplayOrientation.LandscapeRight;
 
-
         _retro = new Wrapper(".", dll, ext);
         try
         {
-            _retro.StartGame("Cores", _core, ".", _game);
+            if(string.IsNullOrEmpty(_core))
+            {
+                throw new Exception("No core defined, check config.txt");
+            }
+
+            _retro.StartGame("Cores", _core, "Games", _game, coreOptionsList, portDevices);
             _gameStarted = true;
         }
         catch (Exception ex)
@@ -93,9 +98,10 @@ public class ScorpionBoxGame : Game
     private void ShowError(Exception v)
     {
         _error = v.Message;
+        Log.Error(v.ToString());
     }
 
-    private void ReadConfig()
+    private void ReadConfig(CoreOptionsList coreOptionsList, Dictionary<uint, uint> portDevices)
     {
         var path = "config.txt";
         if (File.Exists(path) == false)
@@ -106,15 +112,25 @@ public class ScorpionBoxGame : Game
         foreach (var rawLine in File.ReadAllLines(path))
         {
             var line = rawLine.Trim();
-
-            if (line.Length == 0)
+            if(line.StartsWith('#'))
+            {
                 continue;
+            }
 
-            if (line.StartsWith("#"))
-                continue;
+            var com = line.IndexOf('#');
+            if (com > -1)
+            {
+                line = line[..(com - 1)].Trim();
+                if (line.Length == 0)
+                    continue;
+            }
 
             var eq = line.IndexOf('=');
             if (eq <= 0)
+                continue;
+
+            line = line.Trim();
+            if (line.Length == 0)
                 continue;
 
             var key = line[..eq].Trim().ToLowerInvariant();
@@ -147,7 +163,19 @@ public class ScorpionBoxGame : Game
                     break;
 
                 default:
-                    if (key.StartsWith("key_retro_device_id"))
+
+                    if (key.StartsWith("c_"))
+                    {
+                        key = key["c_".Length..];
+                        var core = coreOptionsList.Cores.FirstOrDefault(p => p.CoreName == key);
+                        if (core == null)
+                        {
+                            core = new CoreOptions() { CoreName = key, Options = new List<string>() };
+                            coreOptionsList.Cores.Add(core);
+                        }
+                        core.Options.Add(value);
+                    }
+                    else if (key.StartsWith("key_retro_device_id"))
                     {
                         key = key["key_".Length..];
                         var lastDash = key.LastIndexOf('_');
@@ -167,6 +195,26 @@ public class ScorpionBoxGame : Game
                             KeyDictionary[controller][result] = keyResult;
                         }
 
+                    }
+                    else if (key.StartsWith("port_"))
+                    {
+                        key = key["port_".Length..];
+                        if (uint.TryParse(key, out var port))
+                        {
+                            uint device = (uint)retro_device.RETRO_DEVICE_NONE;
+                            if (Enum.TryParse<retro_device>(value, out var retro))
+                            {
+                                //Used enum
+                                device = (uint)retro;
+                            }
+                            else
+                            {
+                                //Try to read it as an exact device id
+                                uint.TryParse(value, out var number);
+                            }
+
+                            portDevices[port] = device;
+                        }
                     }
                     break;
             }
@@ -188,6 +236,14 @@ public class ScorpionBoxGame : Game
             retro_pixel_format.RETRO_PIXEL_FORMAT_XRGB8888 => _surfaceFormat888,
             _ => SurfaceFormat.Bgr565,
         };
+
+
+        IsFixedTimeStep = true;
+
+        if (_retro.Game.SystemAVInfo.timing.fps > 0)
+        {
+            TargetElapsedTime = TimeSpan.FromSeconds(1.0 / _retro.Game.SystemAVInfo.timing.fps);
+        }
 
         _retro.ActivateGraphics(new ScorpionGraphicsProcessor(this));
         _retro.ActivateInput(new ScorpionInputProcessor(this));
@@ -214,30 +270,41 @@ public class ScorpionBoxGame : Game
 
     private void SetFullscreen(bool v)
     {
-        GetDimensions(out int width, out int height);
-
-        var nativeWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
-        var nativeHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+        Window.AllowUserResizing = true;
 
         _graphics.IsFullScreen = v;
-        if (v)
+        FixScreen(true);
+    }
+
+    private void FixScreen(bool isDirty)
+    {
+        var targetWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
+        var targetHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
+
+        if (_graphics.IsFullScreen == false)
         {
-            _graphics.PreferredBackBufferWidth = nativeWidth;
-            _graphics.PreferredBackBufferHeight = nativeHeight;
-        }
-        else
-        {
-            Window.AllowUserResizing = true;
-            var screenWidths = nativeWidth / width;
-            var screenHeights = nativeHeight / height;
+            GetDimensions(out int width, out int height);
+            var screenWidths = targetWidth / width;
+            var screenHeights = targetHeight / height;
 
             //Default to the largest native scale we can get away with
             var screenScale = (int)Math.Min(screenWidths, screenHeights);
-            _graphics.PreferredBackBufferWidth = (int)width * screenScale;
-            _graphics.PreferredBackBufferHeight = (int)height * screenScale;
+            targetWidth = (int)width * screenScale;
+            targetHeight = (int)height * screenScale;
         }
 
-        _graphics.ApplyChanges();
+        if (_graphics.PreferredBackBufferWidth != targetWidth
+            && _graphics.PreferredBackBufferHeight != targetHeight)
+        {
+            _graphics.PreferredBackBufferWidth = targetWidth;
+            _graphics.PreferredBackBufferHeight = targetHeight;
+            isDirty = true;
+        }
+
+        if (isDirty)
+        {
+            _graphics.ApplyChanges();
+        }
     }
 
     private void GetDimensions(out int width, out int height)
@@ -299,6 +366,7 @@ public class ScorpionBoxGame : Game
     /// </param>
     protected override void Draw(GameTime gameTime)
     {
+        FixScreen(false);
         GraphicsDevice.Clear(Color.Transparent);
 
         if (CurrentTexture == null)

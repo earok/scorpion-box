@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Graphics;
 using SK.Libretro;
 
@@ -71,10 +67,10 @@ internal class ScorpionGraphicsProcessor : IGraphicsProcessor
             }
 
             //Swap Red and Green for OpenGL
-            if(_box.PixelFormat == SurfaceFormat.Color)
+            if (_box.PixelFormat == SurfaceFormat.Color)
             {
                 var i = result.Length;
-                while(i > 0)
+                while (i > 0)
                 {
                     i -= 4;
                     var tmp = result[i];

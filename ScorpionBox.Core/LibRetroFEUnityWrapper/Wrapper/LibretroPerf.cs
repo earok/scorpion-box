@@ -20,6 +20,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
+using System;
 using SK.Libretro.Utilities;
 
 namespace SK.Libretro
@@ -28,7 +29,6 @@ namespace SK.Libretro
     {
         public long RetroPerfGetTimeUsec()
         {
-            Log.Warning("RetroPerfGetTimeUsec");
             return 0;
         }
 

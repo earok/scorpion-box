@@ -119,8 +119,9 @@ namespace SK.Libretro
         {
         }
 
-        public short RetroInputStateCallback(uint port, retro_device device, uint _/*index*/, uint id)
+        public short RetroInputStateCallback(uint port, uint d, uint _/*index*/, uint id)
         {
+            retro_device device = (retro_device)d;
             short result = 0;
 
             if (InputProcessor != null)
@@ -128,30 +129,30 @@ namespace SK.Libretro
                 switch (device)
                 {
                     case retro_device.RETRO_DEVICE_JOYPAD:
-                    {
-                        if (id < (int)retro_device_id_joypad.RETRO_DEVICE_ID_JOYPAD_END)
                         {
-                            result = ProcessJoypadDeviceState((int)port, (int)id);
+                            if (id < (int)retro_device_id_joypad.RETRO_DEVICE_ID_JOYPAD_END)
+                            {
+                                result = ProcessJoypadDeviceState((int)port, (int)id);
+                            }
+                            else
+                            {
+                                Debug.Log("OPS");
+                            }
                         }
-                        else
-                        {
-                            Debug.Log("OPS");
-                        }
-                    }
-                    break;
+                        break;
                     case retro_device.RETRO_DEVICE_MOUSE:
-                    {
-                        if (id < (int)retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_END)
                         {
-                            result = ProcessMouseDeviceState((int)port, (retro_device_id_mouse)id);
+                            if (id < (int)retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_END)
+                            {
+                                result = ProcessMouseDeviceState((int)port, (retro_device_id_mouse)id);
+                            }
                         }
-                    }
-                    break;
+                        break;
                     case retro_device.RETRO_DEVICE_KEYBOARD:
-                    {
+                        {
                             result = BoolToShort(id < (int)retro_key.RETROK_OEM_102 ? Input.GetKey((KeyCode)id) : false);
-                    }
-                    break;
+                        }
+                        break;
                     case retro_device.RETRO_DEVICE_LIGHTGUN:
                         break;
                     case retro_device.RETRO_DEVICE_ANALOG:
@@ -178,52 +179,52 @@ namespace SK.Libretro
             switch (command)
             {
                 case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_X:
-                {
-                    result = FloatToShort(InputProcessor.MouseDelta(port, 0));
-                }
-                break;
+                    {
+                        result = FloatToShort(InputProcessor.MouseDelta(port, 0));
+                    }
+                    break;
                 case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_Y:
-                {
-                    result = FloatToShort(InputProcessor.MouseDelta(port, 1));
-                }
-                break;
+                    {
+                        result = FloatToShort(InputProcessor.MouseDelta(port, 1));
+                    }
+                    break;
                 case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_LEFT:
-                {
-                    result = BoolToShort(InputProcessor.MouseButton(port, 0));
-                }
-                break;
+                    {
+                        result = BoolToShort(InputProcessor.MouseButton(port, 0));
+                    }
+                    break;
                 case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_RIGHT:
-                {
-                    result = BoolToShort(InputProcessor.MouseButton(port, 1));
-                }
-                break;
+                    {
+                        result = BoolToShort(InputProcessor.MouseButton(port, 1));
+                    }
+                    break;
                 case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_WHEELUP:
                 case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_WHEELDOWN:
-                {
-                    result = FloatToShort(InputProcessor.MouseWheelDelta(port, 0));
-                }
-                break;
+                    {
+                        result = FloatToShort(InputProcessor.MouseWheelDelta(port, 0));
+                    }
+                    break;
                 case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_MIDDLE:
-                {
-                    result = BoolToShort(InputProcessor.MouseButton(port, 2));
-                }
-                break;
+                    {
+                        result = BoolToShort(InputProcessor.MouseButton(port, 2));
+                    }
+                    break;
                 case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_HORIZ_WHEELUP:
                 case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_HORIZ_WHEELDOWN:
-                {
-                    result = FloatToShort(InputProcessor.MouseWheelDelta(port, 1));
-                }
-                break;
+                    {
+                        result = FloatToShort(InputProcessor.MouseWheelDelta(port, 1));
+                    }
+                    break;
                 case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_BUTTON_4:
-                {
-                    result = BoolToShort(InputProcessor.MouseButton(port, 3));
-                }
-                break;
+                    {
+                        result = BoolToShort(InputProcessor.MouseButton(port, 3));
+                    }
+                    break;
                 case retro_device_id_mouse.RETRO_DEVICE_ID_MOUSE_BUTTON_5:
-                {
-                    result = BoolToShort(InputProcessor.MouseButton(port, 4));
-                }
-                break;
+                    {
+                        result = BoolToShort(InputProcessor.MouseButton(port, 4));
+                    }
+                    break;
                 default:
                     break;
             }

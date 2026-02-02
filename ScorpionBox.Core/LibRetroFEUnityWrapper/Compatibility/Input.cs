@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LibRetroFE_WrapperOnly.Compatibility
+﻿namespace LibRetroFE_WrapperOnly.Compatibility
 {
     internal static class Input
     {
