@@ -32,6 +32,10 @@ namespace SK.Libretro
             if (log_level > retro_log_level.RETRO_LOG_INFO)
             {
                 Log.Info($"{log_level}: {format}", "Libretro.Wrapper.RetroLogPrintf");
+                if(log_level == retro_log_level.RETRO_LOG_ERROR)
+                {
+                    throw new Exception(format);
+                }
             }
         }
     }

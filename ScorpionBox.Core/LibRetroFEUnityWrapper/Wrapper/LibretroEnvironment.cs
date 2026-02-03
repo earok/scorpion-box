@@ -421,7 +421,7 @@ namespace SK.Libretro
                             Log.Exception(e);
                         }
 
-                        SaveCoreOptionsFile();
+                        //SaveCoreOptionsFile();
                     }
                     break;
                 case retro_environment.RETRO_ENVIRONMENT_SET_SUPPORT_NO_GAME:
@@ -669,7 +669,7 @@ namespace SK.Libretro
                             }
                         }
 
-                        SaveCoreOptionsFile();
+                        //SaveCoreOptionsFile();
                     }
                     break;
                 case retro_environment.RETRO_ENVIRONMENT_SET_CORE_OPTIONS_DISPLAY:

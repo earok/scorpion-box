@@ -29,9 +29,7 @@ namespace SK.Libretro
 {
     public partial class Wrapper
     {
-        public readonly string CoreOptionsFile;
         public readonly string WrapperDirectory;
-        public readonly string CoresDirectory;
         public readonly string SystemDirectory;
         public readonly string SavesDirectory;
         public readonly string TempDirectory;
@@ -55,14 +53,10 @@ namespace SK.Libretro
         {
             Core = new LibretroCore(dll, extension);
 
-            _rootDirectory = rootDirectory;
-            CoreOptionsFile = $"{_rootDirectory}/core_options.json";
-            WrapperDirectory = $"{_rootDirectory}/libretro~";
-            CoresDirectory = $"{WrapperDirectory}/cores";
-            SystemDirectory = $"{WrapperDirectory}/system";
-            SavesDirectory = $"{WrapperDirectory}/saves";
-            TempDirectory = $"{WrapperDirectory}/temp";
-            ExtractDirectory = $"{TempDirectory}/extracted";
+            SystemDirectory = $"{rootDirectory}/System";
+            SavesDirectory = $"{rootDirectory}/Saves";
+            TempDirectory = $"{rootDirectory}/Temp";
+            ExtractDirectory = $"{rootDirectory}/Extracted";
         }
 
         public bool StartGame(string coreDirectory, string coreName, string gameDirectory, string gameName, CoreOptionsList coreOptions, Dictionary<uint, uint> coreDevices)
@@ -135,23 +129,5 @@ namespace SK.Libretro
             InputProcessor = null;
         }
 
-        private void LoadCoreOptionsFile()
-        {
-            _coreOptionsList = FileSystem.DeserializeFromJson<CoreOptionsList>(CoreOptionsFile);
-            if (_coreOptionsList == null)
-            {
-                _coreOptionsList = new CoreOptionsList();
-            }
-        }
-
-        private void SaveCoreOptionsFile()
-        {
-            _coreOptionsList.Cores = _coreOptionsList.Cores.OrderBy(x => x.CoreName).ToList();
-            for (int i = 0; i < _coreOptionsList.Cores.Count; i++)
-            {
-                _coreOptionsList.Cores[i].Options.Sort();
-            }
-            _ = FileSystem.SerializeToJson(_coreOptionsList, CoreOptionsFile);
-        }
     }
 }
