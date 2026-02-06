@@ -11,6 +11,12 @@
     <PackageReference Include="NAudio" Version="2.2.1" />
   </ItemGroup>
   <ItemGroup>
+    <None Update="Content\bin\DesktopGL\ScorpionBox\Fonts\Hud.xnb">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\Fonts\Hud.spritefont">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
     <None Update="Games\Amigo The Fox.adf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

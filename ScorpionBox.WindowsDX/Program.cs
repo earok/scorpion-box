@@ -16,6 +16,6 @@ internal class Program
         Application.SetHighDpiMode(HighDpiMode.SystemAware);
 
         // Create an instance of the game and start the game loop.
-        WindowsCore.Start(SurfaceFormat.Bgra32);
+        WindowsCore.Start(SurfaceFormat.Bgra32, true);
     }
 }

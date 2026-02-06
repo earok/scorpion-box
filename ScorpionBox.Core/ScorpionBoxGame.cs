@@ -43,6 +43,7 @@ public class ScorpionBoxGame : Game
 
     public Dictionary<int, Dictionary<retro_device_id_joypad, Keys>> KeyDictionary = [];
     private StreamWriter _log;
+    private bool _useXInput;
 
     /// <summary>
     /// Indicates if the game is running on a mobile platform.
@@ -61,8 +62,10 @@ public class ScorpionBoxGame : Game
     /// </summary>
     public ScorpionBoxGame(DllModule dll,
         string ext,
-        SurfaceFormat surfaceFormat888 = SurfaceFormat.Color)
+        SurfaceFormat surfaceFormat888 = SurfaceFormat.Color,
+        bool useXInput = false)
     {
+        _useXInput = useXInput;
         var portDevices = new Dictionary<uint, uint>();
         var coreOptionsList = new CoreOptionsList();
         ReadConfig(coreOptionsList, portDevices);
@@ -246,7 +249,7 @@ public class ScorpionBoxGame : Game
         }
 
         _retro.ActivateGraphics(new ScorpionGraphicsProcessor(this));
-        _retro.ActivateInput(new ScorpionInputProcessor(this));
+        _retro.ActivateInput(new ScorpionInputProcessor(this,_useXInput));
 
         var processor = new NAudioAudioProcessor();
         processor.Init((int)_retro.Game.SystemAVInfo.timing.sample_rate);

@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScorpionBox.Android", "Scor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScorpionBox.iOS", "ScorpionBox.iOS\ScorpionBox.iOS.csproj", "{BA3A6EE9-7EB8-4644-83D8-19B510A16AF0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScorpionBox.WindowsGL", "ScorpionBox.WindowsGL\ScorpionBox.WindowsGL.csproj", "{3C2C76F7-50D2-4BC0-863C-0A357501249E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,10 @@ Global
 		{BA3A6EE9-7EB8-4644-83D8-19B510A16AF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BA3A6EE9-7EB8-4644-83D8-19B510A16AF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BA3A6EE9-7EB8-4644-83D8-19B510A16AF0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C2C76F7-50D2-4BC0-863C-0A357501249E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C2C76F7-50D2-4BC0-863C-0A357501249E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C2C76F7-50D2-4BC0-863C-0A357501249E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C2C76F7-50D2-4BC0-863C-0A357501249E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -57,6 +63,7 @@ Global
 		SolutionGuid = {7E0E3079-1CC0-49B1-83A5-6DC30771928D}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		ScorpionBox.Core.Windows\ScorpionBox.Core.Windows.projitems*{3c2c76f7-50d2-4bc0-863c-0a357501249e}*SharedItemsImports = 5
 		ScorpionBox.Core.Windows\ScorpionBox.Core.Windows.projitems*{6d5a5d0f-6fb5-4b28-8e66-8fdde50c9ba2}*SharedItemsImports = 5
 		ScorpionBox.Core.Windows\ScorpionBox.Core.Windows.projitems*{a0cdbd0e-3a41-42b7-9425-a838bc2c7383}*SharedItemsImports = 13
 	EndGlobalSection
