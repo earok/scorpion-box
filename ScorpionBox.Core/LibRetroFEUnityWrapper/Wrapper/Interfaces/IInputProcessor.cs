@@ -20,6 +20,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
+using static SK.Libretro.Wrapper;
+
 namespace SK.Libretro
 {
     public interface IInputProcessor
@@ -29,5 +31,7 @@ namespace SK.Libretro
         float MouseDelta(int port, int axis);
         float MouseWheelDelta(int port, int axis);
         bool MouseButton(int port, int button);
+        bool Key(int id);
+        void Poll(retro_keyboard_event_t keyboardEventCallback);
     }
 }

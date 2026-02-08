@@ -48,7 +48,7 @@ namespace SK.Libretro
             RETRO_LANGUAGE_LAST
         };
 
-        private enum retro_key
+        internal enum retro_key
         {
             RETROK_UNKNOWN = 0,
             RETROK_FIRST = 0,

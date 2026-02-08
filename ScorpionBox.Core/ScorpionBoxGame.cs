@@ -84,7 +84,7 @@ public class ScorpionBoxGame : Game
         _retro = new Wrapper(".", dll, ext);
         try
         {
-            if(string.IsNullOrEmpty(_core))
+            if (string.IsNullOrEmpty(_core))
             {
                 throw new Exception("No core defined, check config.txt");
             }
@@ -115,7 +115,7 @@ public class ScorpionBoxGame : Game
         foreach (var rawLine in File.ReadAllLines(path))
         {
             var line = rawLine.Trim();
-            if(line.StartsWith('#'))
+            if (line.StartsWith('#'))
             {
                 continue;
             }
@@ -249,7 +249,7 @@ public class ScorpionBoxGame : Game
         }
 
         _retro.ActivateGraphics(new ScorpionGraphicsProcessor(this));
-        _retro.ActivateInput(new ScorpionInputProcessor(this,_useXInput));
+        _retro.ActivateInput(new ScorpionInputProcessor(this, _useXInput, 0.5f));
 
         var processor = new NAudioAudioProcessor();
         processor.Init((int)_retro.Game.SystemAVInfo.timing.sample_rate);

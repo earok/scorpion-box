@@ -63,5 +63,6 @@ namespace SK.Libretro
         {
             Log.Warning("RetroPerfStop");
         }
+
     }
 }

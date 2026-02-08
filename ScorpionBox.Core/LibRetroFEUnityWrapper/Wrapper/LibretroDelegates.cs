@@ -310,7 +310,7 @@ namespace SK.Libretro
         private delegate retro_proc_address_t retro_hw_get_proc_address_t([MarshalAs(UnmanagedType.LPStr)] string sym);
 
         // typedef void (RETRO_CALLCONV* retro_keyboard_event_t) (bool down, unsigned keycode, uint32_t character, uint16_t key_modifiers);
-        private delegate void retro_keyboard_event_t([MarshalAs(UnmanagedType.U1)] bool down, uint keycode, uint character, ushort key_modifiers);
+        public delegate void retro_keyboard_event_t([MarshalAs(UnmanagedType.U1)] bool down, uint keycode, uint character, ushort key_modifiers);
 
         // typedef bool (RETRO_CALLCONV* retro_set_eject_state_t) (bool ejected);
         [return: MarshalAs(UnmanagedType.U1)]

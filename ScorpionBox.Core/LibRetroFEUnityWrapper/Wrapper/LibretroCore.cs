@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using SK.Libretro.Utilities;
 using static SK.Libretro.Utilities.StringUtils;
@@ -108,6 +109,7 @@ namespace SK.Libretro
         private retro_perf_register_t _perfRegisterCallback;
         private retro_perf_start_t _perfStartCallback;
         private retro_perf_stop_t _perfStopCallback;
+
         private Wrapper _wrapper;
 
         private DllModule _dll;
@@ -302,6 +304,11 @@ namespace SK.Libretro
             _ = callback;
             _ = reference;
             Log.Warning("Not Implemented", "Libretro.LibretroCore.SetFrameTimeCallback");
+        }
+
+        internal void SetKeyboardCallback(IntPtr callback)
+        {
+            _wrapper.RetroKeyboardEvent = Marshal.GetDelegateForFunctionPointer<retro_keyboard_event_t>(callback);
         }
     }
 }

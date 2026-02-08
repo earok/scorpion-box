@@ -110,10 +110,10 @@ namespace SK.Libretro
                     }
                 case retro_environment.RETRO_ENVIRONMENT_GET_INPUT_DEVICE_CAPABILITIES:
                     {
-                        Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_GET_INPUT_DEVICE_CAPABILITIES");
-                        //ulong* outBitmask = (ulong*)data;
-                        //*outBitmask       = (1 << (int)RetroDevice.RETRO_DEVICE_JOYPAD) | (1 << (int)RetroDevice.RETRO_DEVICE_ANALOG) | (1 << (int)RetroDevice.RETRO_DEVICE_KEYBOARD);
-                        return false;
+//                        Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_GET_INPUT_DEVICE_CAPABILITIES");
+                        ulong* outBitmask = (ulong*)data;
+                        *outBitmask       = (1 << (int)retro_device.RETRO_DEVICE_JOYPAD) | (1 << (int)retro_device.RETRO_DEVICE_ANALOG) | (1 << (int)retro_device.RETRO_DEVICE_KEYBOARD);
+                        return true;
                     }
                 case retro_environment.RETRO_ENVIRONMENT_GET_SENSOR_INTERFACE:
                     {
@@ -371,9 +371,10 @@ namespace SK.Libretro
                     break;
                 case retro_environment.RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK:
                     {
-                        Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK");
-                        return false;
+                        retro_keyboard_callback* retro_keyboard_callback = (retro_keyboard_callback*)data;
+                        Core.SetKeyboardCallback(retro_keyboard_callback->callback);
                     }
+                    break;
                 case retro_environment.RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE:
                     {
                         Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_SET_DISK_CONTROL_INTERFACE");

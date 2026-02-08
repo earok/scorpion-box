@@ -20,6 +20,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE. */
 
+using System;
 using LibRetroFE_WrapperOnly.Compatibility;
 
 namespace SK.Libretro
@@ -115,8 +116,16 @@ namespace SK.Libretro
             BIND_LIST_END_NULL
         };
 
+        internal retro_keyboard_event_t RetroKeyboardEvent;
+
         public void RetroInputPollCallback()
         {
+            InputProcessor.Poll(RetroKeyboardEvent);
+        }
+
+        internal void RetroInputKeyboardCallback(bool down, uint keycode, uint character, ushort key_modifiers)
+        {
+            throw new NotImplementedException();
         }
 
         public short RetroInputStateCallback(uint port, uint d, uint _/*index*/, uint id)
@@ -150,7 +159,7 @@ namespace SK.Libretro
                         break;
                     case retro_device.RETRO_DEVICE_KEYBOARD:
                         {
-                            result = BoolToShort(id < (int)retro_key.RETROK_OEM_102 ? Input.GetKey((KeyCode)id) : false);
+                            result = ProcessKeyboardDeviceState((int)id);                                
                         }
                         break;
                     case retro_device.RETRO_DEVICE_LIGHTGUN:
@@ -165,6 +174,11 @@ namespace SK.Libretro
             }
 
             return result;
+        }
+
+        private short ProcessKeyboardDeviceState(int id)
+        {
+            return BoolToShort(InputProcessor.Key(id));
         }
 
         private short ProcessJoypadDeviceState(int port, int button)
