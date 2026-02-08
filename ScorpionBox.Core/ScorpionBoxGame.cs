@@ -37,13 +37,53 @@ public class ScorpionBoxGame : Game
 
     private Keys _keyFullscreen = Keys.F11;
     private Keys _keyQuit = Keys.Escape;
+    private Keys _keyVolUp = Keys.OemPlus;
+    private Keys _keyVolDown = Keys.OemMinus;
 
     private string _game;
     private bool _startFullScreen;
 
+    private int Volume
+    {
+        get => _volume;
+        set
+        {
+            _volume = Math.Min(100, Math.Max(value, 0));
+            if (_audioProcessor != null)
+            {
+                _audioProcessor.Volume = _volume / 100f;
+            }
+        }
+    }
+
+    public string Message
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(_error) == false)
+            {
+                return _error;
+            }
+            if (_messageTime > 0)
+            {
+                return _message;
+            }
+            return null;
+        }
+        set
+        {
+            _message = value;
+            _messageTime = 2.0;
+        }
+    }
+    string _message;
+    private double _messageTime;
+    private int _volume = 100;
+
     public Dictionary<int, Dictionary<retro_device_id_joypad, Keys>> KeyDictionary = [];
     private StreamWriter _log;
     private bool _useXInput;
+    private NAudioAudioProcessor _audioProcessor;
 
     /// <summary>
     /// Indicates if the game is running on a mobile platform.
@@ -153,12 +193,27 @@ public class ScorpionBoxGame : Game
                     _game = value;
                     break;
 
+                case "volume":
+                    if (int.TryParse(value, out var vol))
+                    {
+                        _volume = vol;
+                    }
+                    break;
+
                 case "key_fullscreen":
                     Enum.TryParse<Keys>(value, true, out _keyFullscreen);
                     break;
 
                 case "key_quit":
                     Enum.TryParse<Keys>(value, true, out _keyQuit);
+                    break;
+
+                case "key_vol+":
+                    Enum.TryParse<Keys>(value, true, out _keyVolUp);
+                    break;
+
+                case "key_vol-":
+                    Enum.TryParse<Keys>(value, true, out _keyVolDown);
                     break;
 
                 case "fullscreen":
@@ -251,9 +306,9 @@ public class ScorpionBoxGame : Game
         _retro.ActivateGraphics(new ScorpionGraphicsProcessor(this));
         _retro.ActivateInput(new ScorpionInputProcessor(this, _useXInput, 0.5f));
 
-        var processor = new NAudioAudioProcessor();
-        processor.Init((int)_retro.Game.SystemAVInfo.timing.sample_rate);
-        _retro.ActivateAudio(processor);
+        _audioProcessor = new NAudioAudioProcessor(_volume / 100f);
+        _audioProcessor.Init((int)_retro.Game.SystemAVInfo.timing.sample_rate);
+        _retro.ActivateAudio(_audioProcessor);
 
         // Load supported languages and set the default language.
         List<CultureInfo> cultures = LocalizationManager.GetSupportedCultures();
@@ -340,6 +395,11 @@ public class ScorpionBoxGame : Game
     /// </param>
     protected override void Update(GameTime gameTime)
     {
+        if (_messageTime > 0)
+        {
+            _messageTime -= gameTime.ElapsedGameTime.TotalSeconds;
+        }
+
         _retro.Update();
 
         _next = Keyboard.GetState();
@@ -351,6 +411,16 @@ public class ScorpionBoxGame : Game
         {
             Exit();
         }
+        if (KeyDown(_keyVolUp))
+        {
+            Volume += 1;
+            Message = "Volume: " + Volume + "%";
+        }
+        if (KeyDown(_keyVolDown))
+        {
+            Volume -= 1;
+            Message = "Volume: " + Volume + "%";
+        }
         _previous = _next;
 
         base.Update(gameTime);
@@ -359,6 +429,11 @@ public class ScorpionBoxGame : Game
     private bool KeyPressed(Keys key)
     {
         return _next.IsKeyDown(key) && _previous.IsKeyUp(key);
+    }
+
+    private bool KeyDown(Keys key)
+    {
+        return _next.IsKeyDown(key);
     }
 
     /// <summary>
@@ -393,9 +468,9 @@ public class ScorpionBoxGame : Game
 
         _spriteBatch.Draw(texture, new Rectangle((int)posX, (int)posY, (int)width, (int)height), Color.White);
 
-        if (string.IsNullOrWhiteSpace(_error) == false)
+        if (Message != null)
         {
-            _spriteBatch.DrawString(_hudFont, _error, Vector2.Zero, Color.White);
+            _spriteBatch.DrawString(_hudFont, Message, Vector2.Zero, Color.White);
         }
         _spriteBatch.End();
 

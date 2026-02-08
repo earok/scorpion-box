@@ -33,6 +33,12 @@ namespace ScorpionBox.Core.Processors
 
         private IWavePlayer _audioDevice;
         private BufferedWaveProvider _bufferedWaveProvider;
+        private float _volume;
+
+        public NAudioAudioProcessor(float volume)
+        {
+            _volume = volume;
+        }
 
         public void Init(int sampleRate)
         {
@@ -53,12 +59,19 @@ namespace ScorpionBox.Core.Processors
                 };
 
                 _audioDevice.Init(_bufferedWaveProvider);
+                Volume = _volume;
                 _audioDevice.Play();
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e);
             }
+        }
+
+        public float Volume
+        {
+            get => _audioDevice.Volume;
+            set => _audioDevice.Volume = value;
         }
 
         public void DeInit()
