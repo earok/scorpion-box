@@ -37,6 +37,7 @@ public class ScorpionBoxGame : Game
 
     private Keys _keyFullscreen = Keys.F11;
     private Keys _keyQuit = Keys.Escape;
+    private Keys _keyUnlockMouse = Keys.Tab;
     private Keys _keyVolUp = Keys.OemPlus;
     private Keys _keyVolDown = Keys.OemMinus;
 
@@ -85,6 +86,21 @@ public class ScorpionBoxGame : Game
     private bool _useXInput;
     private NAudioAudioProcessor _audioProcessor;
 
+    internal bool IsMouseLocked
+    {
+        get => _mouseLocked;
+        set
+        {
+            IsMouseVisible = !value;
+            if (value)
+            {
+                Mouse.SetPosition(Window.ClientBounds.Width / 2, Window.ClientBounds.Height / 2);
+            }
+            _mouseLocked = value;
+        }
+    }
+    bool _mouseLocked;
+
     /// <summary>
     /// Indicates if the game is running on a mobile platform.
     /// </summary>
@@ -105,6 +121,7 @@ public class ScorpionBoxGame : Game
         SurfaceFormat surfaceFormat888 = SurfaceFormat.Color,
         bool useXInput = false)
     {
+        IsMouseVisible = true;
         _useXInput = useXInput;
         var portDevices = new Dictionary<uint, uint>();
         var coreOptionsList = new CoreOptionsList();
@@ -206,6 +223,10 @@ public class ScorpionBoxGame : Game
 
                 case "key_quit":
                     Enum.TryParse<Keys>(value, true, out _keyQuit);
+                    break;
+
+                case "key_unlockmouse":
+                    Enum.TryParse<Keys>(value, true, out _keyUnlockMouse);
                     break;
 
                 case "key_vol+":
@@ -421,6 +442,11 @@ public class ScorpionBoxGame : Game
             Volume -= 1;
             Message = "Volume: " + Volume + "%";
         }
+        if (KeyDown(_keyUnlockMouse))
+        {
+            IsMouseLocked = false;
+            IsMouseVisible = true;
+        }
         _previous = _next;
 
         base.Update(gameTime);
@@ -487,4 +513,21 @@ public class ScorpionBoxGame : Game
         base.Dispose(disposing);
     }
 
+    internal float ScaleX(float mouseDeltaX)
+    {
+        return (_retro.Game.SystemAVInfo.geometry.base_width * mouseDeltaX) / (float)Window.ClientBounds.Width;
+    }
+
+    internal float ScaleY(float mouseDeltaY)
+    {
+        return (_retro.Game.SystemAVInfo.geometry.base_height * mouseDeltaY) / (float)Window.ClientBounds.Height;
+    }
+
+    internal bool IsMouseOnScreen(float mouseX, float mouseY)
+    {
+        return mouseX >= 0
+            && mouseY >= 0
+            && mouseX < Window.ClientBounds.Width
+            && mouseY < Window.ClientBounds.Height;
+    }
 }

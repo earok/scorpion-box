@@ -21,9 +21,17 @@ internal class ScorpionInputProcessor : IInputProcessor
     private Dictionary<Keys, retro_key> _inversekeyMapShifted = [];
 
     private Keys[] _lastPressedKeys = [];
+    private int _lastMouseX;
+    private int _lastMouseY;
+    private bool _isJustLocked;
+    private float _mouseDeltaX;
+    private float _mouseDeltaY;
 
     public ScorpionInputProcessor(ScorpionBoxGame scorpionBoxGame, bool useXInput, float deadZone)
     {
+
+        var mouseState = Mouse.GetState();
+
         _box = scorpionBoxGame;
         _useXInput = useXInput;
         _deadZone = deadZone;
@@ -323,11 +331,38 @@ _keyMap[retro_key.RETROK_OEM_102]
 
     public bool MouseButton(int port, int button)
     {
-        return false;
+        if (_box.IsMouseLocked == false || _isJustLocked)
+        {
+            return false;
+        }
+
+        //Port is ignored, we don't support multi mice
+        var state = Mouse.GetState();
+
+        var result = button switch
+        {
+            0 => state.LeftButton == ButtonState.Pressed,
+            1 => state.RightButton == ButtonState.Pressed,
+            2 => state.MiddleButton == ButtonState.Pressed,
+            _ => false
+        };
+
+        return result;
     }
 
     public float MouseDelta(int port, int axis)
     {
+        if (_box.IsMouseLocked)
+        {
+            switch (axis)
+            {
+                case 0:
+                    return _box.ScaleX(_mouseDeltaX);
+                case 1:
+                    return _box.ScaleY(_mouseDeltaY);
+            }
+        }
+
         return 0;
     }
 
@@ -357,6 +392,38 @@ _keyMap[retro_key.RETROK_OEM_102]
 
     public void Poll(retro_keyboard_event_t keyboardEventCallback)
     {
+        var mouseState = Mouse.GetState();
+        var anyMouse =
+            _box.IsMouseOnScreen(mouseState.X,mouseState.Y)
+            && (mouseState.LeftButton == ButtonState.Pressed
+            || mouseState.RightButton == ButtonState.Pressed
+            || mouseState.MiddleButton == ButtonState.Pressed);
+
+        if (_box.IsMouseLocked)
+        {
+            _box.IsMouseLocked = true;
+            _mouseDeltaX = mouseState.X - _lastMouseX;
+            _mouseDeltaY = mouseState.Y - _lastMouseY;
+            if (anyMouse == false)
+            {
+                _isJustLocked = false; //We've released the buttons, so we can start allowing button presses
+            }
+        }
+        else
+        {
+            if (anyMouse)
+            {
+                _box.IsMouseLocked = true;
+                _isJustLocked = true;
+                _mouseDeltaX = 0;
+                _mouseDeltaY = 0;
+            }
+        }
+
+        mouseState = Mouse.GetState();
+        _lastMouseX = mouseState.X;
+        _lastMouseY = mouseState.Y;
+
         if (keyboardEventCallback != null)
         {
             var state = Keyboard.GetState();
