@@ -110,9 +110,9 @@ namespace SK.Libretro
                     }
                 case retro_environment.RETRO_ENVIRONMENT_GET_INPUT_DEVICE_CAPABILITIES:
                     {
-//                        Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_GET_INPUT_DEVICE_CAPABILITIES");
+                        //                        Log.Error("Environment not implemented!", "RETRO_ENVIRONMENT_GET_INPUT_DEVICE_CAPABILITIES");
                         ulong* outBitmask = (ulong*)data;
-                        *outBitmask       = (1 << (int)retro_device.RETRO_DEVICE_JOYPAD) | (1 << (int)retro_device.RETRO_DEVICE_ANALOG) | (1 << (int)retro_device.RETRO_DEVICE_KEYBOARD);
+                        *outBitmask = (1 << (int)retro_device.RETRO_DEVICE_JOYPAD) | (1 << (int)retro_device.RETRO_DEVICE_ANALOG) | (1 << (int)retro_device.RETRO_DEVICE_KEYBOARD);
                         return true;
                     }
                 case retro_environment.RETRO_ENVIRONMENT_GET_SENSOR_INTERFACE:

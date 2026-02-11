@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using LibRetroFE_WrapperOnly.Compatibility;
 using Microsoft.Xna.Framework.Input;
 using SK.Libretro;
 using static SK.Libretro.Wrapper;
@@ -394,7 +393,7 @@ _keyMap[retro_key.RETROK_OEM_102]
     {
         var mouseState = Mouse.GetState();
         var anyMouse =
-            _box.IsMouseOnScreen(mouseState.X,mouseState.Y)
+            _box.IsMouseOnScreen(mouseState.X, mouseState.Y)
             && (mouseState.LeftButton == ButtonState.Pressed
             || mouseState.RightButton == ButtonState.Pressed
             || mouseState.MiddleButton == ButtonState.Pressed);

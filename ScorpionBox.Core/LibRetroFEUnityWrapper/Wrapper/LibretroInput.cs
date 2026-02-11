@@ -120,7 +120,10 @@ namespace SK.Libretro
 
         public void RetroInputPollCallback()
         {
-            InputProcessor.Poll(RetroKeyboardEvent);
+            if (InputProcessor != null)
+            {
+                InputProcessor.Poll(RetroKeyboardEvent);
+            }
         }
 
         internal void RetroInputKeyboardCallback(bool down, uint keycode, uint character, ushort key_modifiers)
@@ -159,7 +162,7 @@ namespace SK.Libretro
                         break;
                     case retro_device.RETRO_DEVICE_KEYBOARD:
                         {
-                            result = ProcessKeyboardDeviceState((int)id);                                
+                            result = ProcessKeyboardDeviceState((int)id);
                         }
                         break;
                     case retro_device.RETRO_DEVICE_LIGHTGUN:

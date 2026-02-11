@@ -23,7 +23,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using SK.Libretro.Utilities;
-using static SK.Libretro.Wrapper;
 
 namespace SK.Libretro
 {

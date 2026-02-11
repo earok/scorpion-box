@@ -22,7 +22,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
 using SK.Libretro.Utilities;
 using static SK.Libretro.Utilities.StringUtils;
@@ -172,7 +171,7 @@ namespace SK.Libretro
                     retro_set_environment(_environmentCallback);
                     retro_init();
 
-                    foreach(var controller in PortDevices)
+                    foreach (var controller in PortDevices)
                     {
                         retro_set_controller_port_device(controller.Key, (retro_device)controller.Value);
                     }
