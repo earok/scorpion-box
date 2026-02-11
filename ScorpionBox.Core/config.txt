@@ -39,7 +39,6 @@ key_fullscreen=F11
 key_quit=Escape
 key_vol+=OemPlus
 key_vol-=OemMinus
-key_unlockmouse=Tab
 
 #BlastEm has no configuration?
 

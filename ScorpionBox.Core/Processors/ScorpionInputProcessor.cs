@@ -22,7 +22,6 @@ internal class ScorpionInputProcessor : IInputProcessor
     private Keys[] _lastPressedKeys = [];
     private int _lastMouseX;
     private int _lastMouseY;
-    private bool _isJustLocked;
     private float _mouseDeltaX;
     private float _mouseDeltaY;
 
@@ -330,11 +329,6 @@ _keyMap[retro_key.RETROK_OEM_102]
 
     public bool MouseButton(int port, int button)
     {
-        if (_box.IsMouseLocked == false || _isJustLocked)
-        {
-            return false;
-        }
-
         //Port is ignored, we don't support multi mice
         var state = Mouse.GetState();
 
@@ -351,18 +345,12 @@ _keyMap[retro_key.RETROK_OEM_102]
 
     public float MouseDelta(int port, int axis)
     {
-        if (_box.IsMouseLocked)
+        return axis switch
         {
-            switch (axis)
-            {
-                case 0:
-                    return _box.ScaleX(_mouseDeltaX);
-                case 1:
-                    return _box.ScaleY(_mouseDeltaY);
-            }
-        }
-
-        return 0;
+            0 => _box.ScaleX(_mouseDeltaX),
+            1 => _box.ScaleY(_mouseDeltaY),
+            _ => 0,
+        };
     }
 
     public float MouseWheelDelta(int port, int axis)
@@ -398,30 +386,32 @@ _keyMap[retro_key.RETROK_OEM_102]
             || mouseState.RightButton == ButtonState.Pressed
             || mouseState.MiddleButton == ButtonState.Pressed);
 
-        if (_box.IsMouseLocked)
-        {
-            _box.IsMouseLocked = true;
-            _mouseDeltaX = mouseState.X - _lastMouseX;
-            _mouseDeltaY = mouseState.Y - _lastMouseY;
-            if (anyMouse == false)
-            {
-                _isJustLocked = false; //We've released the buttons, so we can start allowing button presses
-            }
-        }
-        else
-        {
-            if (anyMouse)
-            {
-                _box.IsMouseLocked = true;
-                _isJustLocked = true;
-                _mouseDeltaX = 0;
-                _mouseDeltaY = 0;
-            }
-        }
+        _mouseDeltaX = mouseState.X - _lastMouseX;
+        _mouseDeltaY = mouseState.Y - _lastMouseY;
 
         mouseState = Mouse.GetState();
         _lastMouseX = mouseState.X;
         _lastMouseY = mouseState.Y;
+
+        //Special, force quick scroll
+        if(_box.IsMouseUp(mouseState.Y))
+        {
+            _mouseDeltaY = -100;
+        }
+        if (_box.IsMouseDown(mouseState.Y))
+        {
+            _mouseDeltaY = 100;
+        }
+        if (_box.IsMouseLeft(mouseState.X))
+        {
+            _mouseDeltaX = -100;
+        }
+        if (_box.IsMouseRight(mouseState.X))
+        {
+            _mouseDeltaX = 100;
+        }
+
+
 
         if (keyboardEventCallback != null)
         {
