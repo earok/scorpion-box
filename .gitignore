@@ -81,7 +81,7 @@ Documentation/Output/
 **/*.nupkg
 
 #Zip files
-*.zip
+#*.zip - We do want one zip file, the AES file
 
 Installers/MacOS/Scripts/Framework/postinstall
 IDE/MonoDevelop/MonoDevelop.MonoGame/templates/Common/MonoGame.Framework.dll.config
