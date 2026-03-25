@@ -223,7 +223,7 @@ _keyMap[retro_key.RETROK_OEM_102]
         else
         {
             var joystick = Joystick.GetState(port);
-            if (joystick.IsConnected)
+            if (joystick.IsConnected) 
             {
                 switch ((retro_device_id_joypad)button)
                 {
@@ -234,7 +234,7 @@ _keyMap[retro_key.RETROK_OEM_102]
                     case retro_device_id_joypad.RETRO_DEVICE_ID_JOYPAD_DOWN:
                         return TestJoystickAxis(joystick, port, 1) > 0;
                     case retro_device_id_joypad.RETRO_DEVICE_ID_JOYPAD_UP:
-                        return TestJoystickAxis(joystick, port, 1) > 0;
+                        return TestJoystickAxis(joystick, port, 1) < 0;
                     case retro_device_id_joypad.RETRO_DEVICE_ID_JOYPAD_A:
                         return TestJoystickButton(joystick, 0);
                     case retro_device_id_joypad.RETRO_DEVICE_ID_JOYPAD_B:
@@ -278,11 +278,11 @@ _keyMap[retro_key.RETROK_OEM_102]
             {
                 if (hat.Up == ButtonState.Pressed)
                 {
-                    return 1;
+                    return -1;
                 }
                 if (hat.Down == ButtonState.Pressed)
                 {
-                    return -1;
+                    return 1;
                 }
             }
         }

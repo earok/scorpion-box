@@ -5,10 +5,14 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Games\line_of_sight.adf" />
     <None Remove="System\aes.zip" />
     <None Remove="System\NeoGeo.zip" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Games\line_of_sight.adf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="System\NeoGeo.zip">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
