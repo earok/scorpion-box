@@ -8,7 +8,7 @@ core=puae #Default core for Amiga
 #core=geolith #Default core for NeoGeo
 
 #Game should match the name of the ROM without extension. The core itself will try to match the extension to the game.
-game=line_of_sight
+game=Amigo The Fox
 
 #Misc
 volume=100
