@@ -21,19 +21,47 @@
  * SOFTWARE. */
 
 using System;
+using System.Runtime.InteropServices;
 using SK.Libretro.Utilities;
 
 namespace SK.Libretro
 {
     public partial class Wrapper
     {
-        public void RetroLogPrintf(retro_log_level log_level, string format, IntPtr _args)
+        public void RetroLogPrintf(retro_log_level log_level, string format, IntPtr args)
         {
             if (log_level > retro_log_level.RETRO_LOG_INFO)
             {
-                Log.Info($"{log_level}: {format}", "Libretro.Wrapper.RetroLogPrintf");
-                //Todo - maybe pass exception info to the front end?
+                string message = FormatRetroLog(format, args);
+                Log.Info($"{log_level}: {message}", "Libretro.Wrapper.RetroLogPrintf");
             }
+        }
+
+        private static string FormatRetroLog(string format, IntPtr args)
+        {
+            string msg = format.TrimEnd('\n', '\r');
+            if (args == IntPtr.Zero || !msg.Contains('%'))
+                return msg;
+
+            // On x64, args is the first variadic argument as a raw register value.
+            // Handle the common single-%s case (e.g. "Failed to load bios at: %s").
+            int pct = msg.IndexOf('%');
+            if (pct >= 0 && pct + 1 < msg.Length)
+            {
+                char spec = msg[pct + 1];
+                if (spec == 's')
+                {
+                    string argStr = Marshal.PtrToStringAnsi(args);
+                    if (argStr != null)
+                        return msg.Substring(0, pct) + argStr + msg.Substring(pct + 2);
+                }
+                else if (spec == 'd' || spec == 'i' || spec == 'u')
+                {
+                    return msg.Substring(0, pct) + args.ToInt64() + msg.Substring(pct + 2);
+                }
+            }
+
+            return msg;
         }
     }
 }
